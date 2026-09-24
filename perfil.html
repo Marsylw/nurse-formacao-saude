@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nurse — Meu Perfil</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Navegação principal">
+      <div class="nav-inner">
+        <a class="brand" href="menu.html" aria-label="Nurse — início">
+          <img src="Nurselogo.jpg" class="brand-logo" alt="Nurse">
+          <span class="brand-copy">
+            <strong>NURSE</strong>
+            <small>FORMAÇÃO EM SAÚDE</small>
+          </span>
+        </a>
+
+        <div class="desktop-nav">
+          <a class="nav-link" href="menu.html">Início</a>
+          <a class="nav-link" href="meu-curso.html">Meu Curso</a>
+          <a class="nav-link" href="index.html#cursos">Catálogo de cursos</a>
+          <a class="nav-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="profile-link" href="perfil.html" aria-current="page">
+            <span class="profile-avatar" aria-hidden="true">A</span>
+            <span class="profile-label">Perfil</span>
+          </a>
+          <button class="menu-btn" id="menuOpenBtn" type="button" aria-label="Abrir menu" aria-controls="mobileSheet" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="mobile-sheet" id="mobileSheet" aria-label="Menu móvel">
+    <div class="sheet-head">
+      <a class="brand" href="menu.html" aria-label="Nurse — início">
+        <img src="Nurselogo.jpg" class="brand-logo" alt="Nurse">
+        <span class="brand-copy">
+          <strong>NURSE</strong>
+          <small>FORMAÇÃO EM SAÚDE</small>
+        </span>
+      </a>
+      <button class="sheet-close" id="sheetCloseBtn" type="button" aria-label="Fechar menu">×</button>
+    </div>
+
+    <p class="mobile-greeting">Portal do aluno</p>
+    <a class="sheet-link" href="menu.html">Início</a>
+    <a class="sheet-link" href="meu-curso.html">Meu Curso</a>
+    <a class="sheet-link active" href="perfil.html" aria-current="page">Meu Perfil</a>
+    <a class="sheet-link" href="index.html#cursos">Catálogo de cursos</a>
+    <a class="sheet-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte via WhatsApp</a>
+    <button class="sheet-link sheet-logout" id="mobileLogout" type="button">Sair</button>
+  </aside>
+
+  <main class="page-shell home-wrap">
+    <header class="page-intro">
+      <p class="eyebrow">Conta</p>
+      <h1>Meu Perfil</h1>
+      <p>Atualiza os teus dados pessoais e mantém a tua conta Nurse protegida.</p>
+    </header>
+
+    <section class="page-grid" aria-label="Dados da conta">
+      <article class="portal-card profile-card">
+        <header class="section-heading">
+          <p class="eyebrow">Dados pessoais</p>
+          <h2>Informação da conta</h2>
+          <p>Estes dados ajudam a identificar-te no portal e nos teus cursos.</p>
+        </header>
+
+        <form class="profile-form" id="profile-form">
+          <p class="feedback" id="profile-email" role="status" aria-live="polite">A carregar a tua conta…</p>
+
+          <label for="full-name">
+            Nome completo
+            <input id="full-name" type="text" placeholder="O teu nome completo" autocomplete="name">
+          </label>
+
+          <label for="avatar-url">
+            URL da foto de perfil
+            <span class="field-hint">Opcional</span>
+            <input id="avatar-url" type="url" placeholder="https://…" autocomplete="url">
+          </label>
+
+          <button class="button button-primary" type="submit">Guardar alterações</button>
+          <p class="feedback" id="profile-feedback" role="status" aria-live="polite"></p>
+        </form>
+      </article>
+
+      <aside class="portal-card profile-security-card">
+        <p class="eyebrow">Segurança</p>
+        <h2>Palavra-passe</h2>
+        <p>Se quiseres alterar a tua palavra-passe, introduz uma nova abaixo. Se deixares o campo vazio, a palavra-passe atual mantém-se.</p>
+
+        <label class="security-field" for="new-password">
+          Nova palavra-passe
+          <span class="field-hint">Mínimo de 6 caracteres</span>
+          <input id="new-password" type="password" minlength="6" placeholder="Introduz uma nova palavra-passe" autocomplete="new-password">
+        </label>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Nurse Formação em Saúde · <a href="menu.html">Voltar ao início</a></p>
+  </footer>
+
+  <script src="menu.js" defer></script>
+  <script src="perfil.js" defer></script>
+</body>
+</html>

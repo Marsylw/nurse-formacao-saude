@@ -1,0 +1,8 @@
+(async function(){
+  'use strict';
+  const client=window.supabase&&window.supabase.createClient?window.supabase.createClient('https://uzitnphltzblfccmiecf.supabase.co','sb_publishable_8_3FrRYH5JSpdpi9sSv9Wg_T2ST8IGW'):null;const $=id=>document.getElementById(id);const feedback=$('profile-feedback');
+  if(!client){feedback.textContent='Não foi possível ligar ao serviço de conta.';feedback.classList.add('error');return}
+  const {data:{user}}=await client.auth.getUser();if(!user){window.location.href='login.html?redirect=perfil.html';return}
+  const metadata=user.user_metadata||{};$('profile-email').textContent=user.email?'Email: '+user.email:'Email não disponível';$('full-name').value=metadata.full_name||metadata.name||'';$('avatar-url').value=metadata.avatar_url||'';
+  $('profile-form').addEventListener('submit',async function(e){e.preventDefault();const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;feedback.className='feedback';feedback.textContent='A guardar…';const name=$('full-name').value.trim(),avatar=$('avatar-url').value.trim(),password=$('new-password').value;const updates={data:{full_name:name,avatar_url:avatar}};if(password)updates.password=password;const result=await client.auth.updateUser(updates);if(result.error){feedback.classList.add('error');feedback.textContent='Não foi possível guardar: '+result.error.message;button.disabled=false;return}await client.from('perfis').upsert({id:user.id,nome:name,avatar_url:avatar,updated_at:new Date().toISOString()});$('new-password').value='';feedback.textContent='Perfil atualizado com sucesso.';button.disabled=false});
+})();

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nurse Formação em Saúde – Entrar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { 
+      --navy:#0d1b2a; 
+      --navy-soft:#142b40; 
+      --gold:#f5a623; 
+      --muted:#8fa8bf; 
+      --line:rgba(255,255,255,.12); 
+      --ease:cubic-bezier(.23,1,.32,1); 
+      --card-bg:#11253a;
+      --input-bg:#0a1926;
+      --input-border:#23445e;
+      --text-light:#f8fafc;
+      --text-muted:#8fa8bf;
+    }
+    * { box-sizing:border-box; }
+    html { min-height:100%; }
+    body { margin:0; min-height:100vh; color:var(--text-light); background:radial-gradient(circle at 12% 8%, #173b59 0, transparent 35%), linear-gradient(145deg,#08131f 0%,#0d1b2a 55%,#102d43 100%); font-family:'Barlow',sans-serif; }
+    nav { height:78px; padding:0 clamp(1.1rem,4vw,4.5rem); display:flex; align-items:center; justify-content:space-between; gap:1rem; border-bottom:1px solid rgba(255,255,255,.08); background:rgba(8,19,31,.72); backdrop-filter:blur(14px); }
+    .nav-logo { display:flex; align-items:center; gap:.65rem; min-width:max-content; text-decoration:none; color:#fff; }
+    
+    /* --- LOGÓTIPO (Sem círculo de fundo) --- */
+    .logo-mark { 
+      width:46px; 
+      height:46px; 
+      flex:0 0 auto; 
+      display:grid; 
+      place-items:center; 
+      background: transparent; 
+      border: none; 
+      padding: 0;
+    }
+    .logo-mark svg { width:100%; height:100%; display:block; }
+
+    .nav-prNurse { display:flex; flex-direction:column; line-height:1; }
+    .nav-prNurse span:first-child { color:var(--gold); font:800 1.35rem 'Barlow Condensed',sans-serif; letter-spacing:.08em; }
+    .nav-prNurse span:last-child { color:#dce8f2; margin-top:.18rem; font-size:.62rem; letter-spacing:.17em; font-weight:600; }
+    .nav-links { display:flex; align-items:center; gap:clamp(1rem,3vw,2.6rem); list-style:none; margin:0 0 0 auto; padding:0; }
+    .nav-links a { color:#b9ccdc; text-decoration:none; font-size:.92rem; transition:color .18s ease; }
+    .nav-links a:hover,.nav-links a[aria-current="page"] { color:var(--gold); }
+    .nav-cta { margin-left:clamp(.8rem,2vw,2rem); padding:.65rem 1.1rem; color:var(--navy); background:var(--gold); border-radius:5px; text-decoration:none; font-weight:700; font-size:.9rem; transition:transform .18s ease, filter .18s ease; }
+    .nav-cta:hover { filter:brightness(1.08); transform:translateY(-1px); }
+    main { min-height:calc(100vh - 78px); display:grid; place-items:center; padding:3.5rem 1.2rem 5rem; position:relative; overflow:hidden; }
+    main::before, main::after { content:""; position:absolute; border-radius:50%; pointer-events:none; filter:blur(3px); }
+    main::before { width:340px; height:340px; left:-190px; bottom:4%; background:rgba(245,166,35,.08); }
+    main::after { width:260px; height:260px; right:-130px; top:10%; background:rgba(30,111,200,.12); }
+    .login-shell { width:min(100%,470px); position:relative; z-index:1; animation:rise .45s var(--ease) both; }
+    
+    /* --- CARD ESCURO (Nova Tema) --- */
+    .login-card { 
+      overflow:hidden; 
+      border:1px solid rgba(255,255,255,.1); 
+      border-radius:24px; 
+      background:var(--card-bg); 
+      color:var(--text-light); 
+      box-shadow:0 24px 70px rgba(0,0,0,.4); 
+    }
+    .card-body { 
+      padding:2rem; 
+      background:var(--card-bg); 
+      border-bottom:1px solid rgba(255,255,255,.06); 
+      border-radius:21px; 
+    }
+    h1 { margin:0 0 .4rem; font:800 2.2rem/1.05 'Barlow Condensed',sans-serif; color:#fff; }
+    .subtitle { margin:0 0 1.6rem; color:var(--text-muted); font-size:1rem; }
+    .socials { display:grid; gap:.7rem; }
+    .social-btn, .submit-btn { width:100%; border-radius:10px; font:600 1rem 'Barlow',sans-serif; cursor:pointer; transition:transform .16s ease, background .18s ease, box-shadow .18s ease; }
+    
+    .social-btn { 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      gap:.7rem; 
+      padding:.78rem 1rem; 
+      border:1px solid var(--input-border); 
+      background:#1a334a; 
+      color:#e0e0e0; 
+      box-shadow:0 3px 10px rgba(0,0,0,.1); 
+    }
+    .social-btn:hover { background:#1f3d58; box-shadow:0 5px 14px rgba(0,0,0,.2); }
+    .social-btn:active,.submit-btn:active { transform:scale(.97); }
+    .google-icon { color:#4285f4; font-weight:800; font-size:1.2rem; }
+    .apple-icon { color:#fff; font-size:1.35rem; line-height:1; }
+    
+    .divider { display:flex; align-items:center; gap:.7rem; margin:1.5rem 0; color:#5a7a94; font-size:.75rem; letter-spacing:.12em; }
+    .divider::before,.divider::after { content:""; height:1px; flex:1; background:linear-gradient(90deg,transparent,#23445e,transparent); }
+    
+    label { display:block; margin-bottom:.45rem; font-size:.9rem; font-weight:600; color:#b9ccdc; }
+    input { 
+      width:100%; 
+      padding:.82rem .9rem; 
+      border:1px solid var(--input-border); 
+      border-radius:10px; 
+      outline:none; 
+      color:#fff; 
+      background:var(--input-bg); 
+      font:400 1rem 'Barlow',sans-serif; 
+      transition:border-color .18s ease, box-shadow .18s ease; 
+    }
+    input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,166,35,.15); }
+    input::placeholder { color:#5a7a94; }
+    .field + .field { margin-top:1rem; }
+    
+    .submit-btn { 
+      margin-top:1.35rem; 
+      padding:.88rem 1rem; 
+      border:0; 
+      background:var(--gold); 
+      color:var(--navy); 
+      box-shadow:0 8px 18px rgba(245,166,35,.2); 
+      font-weight:700;
+    }
+    .submit-btn:hover { background:#f7b84a; filter:brightness(1.05); }
+    .submit-btn:disabled { cursor:wait; opacity:.6; }
+    
+    .feedback { min-height:1.2rem; margin:.8rem 0 0; text-align:center; font-size:.88rem; }
+    .feedback.success { color:#4ade80; } 
+    .feedback.error { color:#f87171; }
+    
+    .card-footer { 
+      padding:.9rem 1rem 1rem; 
+      text-align:center; 
+      color:var(--text-muted); 
+      font-size:.88rem; 
+      background:#0d1f30; 
+    }
+    .mode-toggle { margin-left:.25rem; padding:0; border:0; background:none; color:#e0e0e0; font:600 .88rem 'Barlow',sans-serif; cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+    .mode-toggle:hover { color:var(--gold); }
+    .back-link { display:block; margin-top:1.2rem; text-align:center; color:var(--text-muted); text-decoration:none; font-size:.9rem; }
+    .back-link:hover { color:var(--gold); }
+    
+    @keyframes rise { from { opacity:0; transform:translateY(14px) scale(.985); } to { opacity:1; transform:none; } }
+    @media (max-width:720px) { 
+      nav { height:70px; } 
+      .nav-links { display:none; } 
+      .nav-cta { margin-left:auto; } 
+      .logo-mark { width:40px; height:40px; } 
+      main { min-height:calc(100vh - 70px); padding-top:2.2rem; } 
+      .card-body { padding:1.5rem; } 
+      h1 { text-align:center; } 
+      .subtitle { text-align:center; } 
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+  </style>
+</head>
+<body>
+  <nav aria-label="Navegação principal">
+    <a class="nav-logo" href="index.html" aria-label="Nurse Formação em Saúde">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <!-- Cruz médica -->
+          <path fill="#2b7af0" d="M44 8h20v10h10v20H64v14H44V38H34V18h10z"/>
+          <!-- Telhado da casa -->
+          <path fill="none" stroke="#2ecc71" stroke-width="9" stroke-linejoin="miter" d="M30 72 66 32l36 40"/>
+          <!-- Janela 2x2 -->
+          <g fill="#2ecc71">
+            <rect x="53" y="52" width="12" height="12"/>
+            <rect x="67" y="52" width="12" height="12"/>
+            <rect x="53" y="66" width="12" height="12"/>
+            <rect x="67" y="66" width="12" height="12"/>
+          </g>
+          <!-- Estetoscópio -->
+          <g fill="none" stroke="#5dade2" stroke-width="5" stroke-linecap="round">
+            <circle cx="28" cy="32" r="10"/>
+            <path d="M28 42c-6 14-18 24-16 38 2 14 22 22 40 18 16-4 22-14 32-18"/>
+          </g>
+          <circle cx="28" cy="32" r="3.5" fill="#5dade2"/>
+          <circle cx="90" cy="76" r="8.5" fill="#5dade2"/>
+          <circle cx="90" cy="76" r="3.5" fill="#aed6f1"/>
+        </svg>
+      </span>
+      <span class="nav-prNurse"><span>NURSE</span><span>FORMAÇÃO EM SAÚDE</span></span>
+    </a>
+    
+  </nav>
+
+  <main>
+    <section class="login-shell" aria-labelledby="form-title">
+      <div class="login-card">
+        <div class="card-body">
+          <h1 id="form-title">Entrar</h1>
+          <p class="subtitle" id="form-subtitle">Olá, que bom ter-te de volta!</p>
+          <div class="socials">
+            <button class="social-btn" type="button" data-provider="Google"><span class="google-icon">G</span> Continuar com Google</button>
+          </div>
+          <div class="divider" aria-hidden="true">OU</div>
+          <form id="auth-form" novalidate>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="nome@exemplo.com" required>
+            </div>
+            <!-- Password field is now always visible -->
+            <div class="field" id="password-field">
+              <label for="password">Palavra-passe</label>
+              <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="A tua palavra-passe" required>
+            </div>
+            <button class="submit-btn" id="submit-btn" type="submit">Entrar</button>
+            <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <div class="card-footer">
+          <span id="footer-copy">Ainda não tens uma conta?</span>
+          <button class="mode-toggle" id="mode-toggle" type="button">Criar conta</button>
+        </div>
+      </div>
+      
+    </section>
+  </main>
+
+  <script>
+    'use strict';
+
+    // Substitui pelos valores reais: Supabase → Project Settings → API
+      const SUPABASE_URL = 'https://uzitnphltzblfccmiecf.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aXRucGhsdHpibGZjY21pZWNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Njc3MDksImV4cCI6MjEwMjA0MzcwOX0.CaZrcgP93HROuyqfv8akBBGPRLgKMWGLOl2pO7pm2YQ';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function vincularInscricao(email, userId) {
+      // Liga esta conta ao pedido de inscrição feito antes com o mesmo
+      // email (se existir e ainda não tiver dono). Não bloqueia o login
+      // se a atualização falhar (ex.: nenhuma inscrição encontrada ainda).
+      const { error } = await supabaseClient
+        .from('inscricoes')
+        .update({ user_id: userId })
+        .eq('email', email)
+        .is('user_id', null);
+      if (error) console.warn('Não foi possível vincular a inscrição:', error.message);
+    }
+
+    const state = { isSignIn: true };
+    // Abrir login.html não deve levar automaticamente ao menu só porque
+    // existe uma sessão antiga no navegador. Apenas uma autenticação iniciada
+    // pelo utilizador (ou o regresso de OAuth) pode ativar o redirecionamento.
+    const authCallback = window.location.search.includes('code=') || window.location.hash.includes('access_token=');
+    let redirectAfterAuth = authCallback;
+    let isRedirecting = false;
+    const copy = {
+      signIn: { title: 'Entrar', subtitle: 'Olá, que bom ter-te de volta!', button: 'Entrar', footer: 'Ainda não tens uma conta?', cta: 'Criar conta' },
+      signUp: { title: 'Criar conta', subtitle: 'Cria a tua conta para continuar!', button: 'Criar conta', footer: 'Já tens uma conta?', cta: 'Entrar' }
+    };
+    const $ = (selector) => document.querySelector(selector);
+    const formTitle = $('#form-title');
+    const formSubtitle = $('#form-subtitle');
+    const submitButton = $('#submit-btn');
+    const footerCopy = $('#footer-copy');
+    const modeToggle = $('#mode-toggle');
+    const passwordInput = $('#password');
+    const feedback = $('#feedback');
+
+    function renderMode() {
+      const current = state.isSignIn ? copy.signIn : copy.signUp;
+      formTitle.textContent = current.title;
+      formSubtitle.textContent = current.subtitle;
+      submitButton.textContent = current.button;
+      footerCopy.textContent = current.footer;
+      modeToggle.textContent = current.cta;
+      // Password is always required now, no need to toggle visibility
+      passwordInput.required = true;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      state.isSignIn = !state.isSignIn;
+      renderMode();
+      requestAnimationFrame(() => $('#email').focus());
+    });
+
+    document.querySelectorAll('[data-provider]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        redirectAfterAuth = true;
+        const provider = button.dataset.provider.toLowerCase(); // 'google' ou 'apple'
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        button.disabled = true;
+        button.textContent = provider === 'google' ? 'A abrir o Google…' : 'A abrir…';
+
+        try {
+          const redirectTo = new URL('login.html', window.location.href).href;
+          const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo }
+          });
+
+          if (error) throw error;
+          if (data && data.url) {
+            // Alguns ambientes não iniciam a navegação automaticamente.
+            window.location.assign(data.url);
+          } else {
+            throw new Error('O Supabase não devolveu o endereço de autenticação do Google.');
+          }
+        } catch (error) {
+          button.disabled = false;
+          button.innerHTML = '<span class="google-icon">G</span> Continuar com Google';
+          feedback.textContent = 'Não foi possível abrir o Google: ' + (error.message || 'verifica a configuração do provedor.');
+          feedback.className = 'feedback error';
+        }
+      });
+    });
+
+    // Disparado tanto depois do login/registo por email como depois de
+    // voltar do Google/Apple — é o único sítio que liga a conta à
+    // inscrição e redireciona, para não duplicar essa lógica.
+    async function redirecionarDepoisDeAutenticar(session) {
+      if (!redirectAfterAuth || isRedirecting || !session || !session.user || !session.user.email) return;
+      isRedirecting = true;
+      await vincularInscricao(session.user.email, session.user.id);
+      window.location.href = 'menu.html';
+    }
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') redirecionarDepoisDeAutenticar(session);
+    });
+
+    $('#auth-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = $('#email').value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !email.includes('@')) {
+        feedback.textContent = 'Introduz um email válido.';
+        feedback.className = 'feedback error';
+        $('#email').focus();
+        return;
+      }
+
+      if (password.length < 6) {
+        feedback.textContent = 'A palavra-passe deve ter pelo menos 6 caracteres.';
+        feedback.className = 'feedback error';
+        passwordInput.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+      redirectAfterAuth = true;
+      submitButton.textContent = state.isSignIn ? 'A entrar…' : 'A criar conta…';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      const resultado = state.isSignIn
+        ? await supabaseClient.auth.signInWithPassword({ email, password })
+        : await supabaseClient.auth.signUp({ email, password });
+
+      if (resultado.error) {
+        feedback.textContent = resultado.error.message;
+        feedback.className = 'feedback error';
+        submitButton.disabled = false;
+        submitButton.textContent = state.isSignIn ? 'Entrar' : 'Criar conta';
+        return;
+      }
+
+      const userId = resultado.data.user ? resultado.data.user.id : null;
+
+      feedback.textContent = state.isSignIn ? '✓ Login efetuado com sucesso. A redirecionar…' : '✓ Conta criada com sucesso. A redirecionar…';
+      feedback.className = 'feedback success';
+
+      // O listener normalmente trata o redirecionamento. Este fallback cobre
+      // o caso em que o Supabase devolve a sessão sem emitir SIGNED_IN.
+      if (resultado.data.session) redirecionarDepoisDeAutenticar(resultado.data.session);
+    });
+  </script>
+</body>
+</html>
