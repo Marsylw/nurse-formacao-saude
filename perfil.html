@@ -31,10 +31,19 @@
         </div>
 
         <div class="nav-actions">
-          <a class="profile-link" href="perfil.html" aria-current="page">
-            <span class="profile-avatar" aria-hidden="true">A</span>
-            <span class="profile-label">Perfil</span>
-          </a>
+          <div class="avatar-wrap">
+            <button class="avatar-trigger" id="avatarTrigger" type="button" aria-label="Abrir menu da conta" aria-controls="avatarMenu" aria-expanded="false">
+              <span class="profile-avatar" aria-hidden="true">A</span>
+              <span class="profile-label">Perfil</span>
+              <span class="avatar-chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="avatar-menu" id="avatarMenu" role="menu" aria-label="Menu da conta">
+              <a class="avatar-menu-item" href="perfil.html" role="menuitem" aria-current="page">Meu Perfil</a>
+              <button class="avatar-menu-item" type="button" data-action="settings" role="menuitem">Configurações</button>
+              <div class="avatar-menu-separator"></div>
+              <button class="avatar-menu-item danger" id="avatarLogout" type="button" data-action="logout" role="menuitem">Sair</button>
+            </div>
+          </div>
           <button class="menu-btn" id="menuOpenBtn" type="button" aria-label="Abrir menu" aria-controls="mobileSheet" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -44,6 +53,21 @@
   </header>
 
   <div class="overlay" id="overlay"></div>
+  <div class="settings-overlay" id="settingsOverlay" hidden>
+    <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <button class="settings-close" id="settingsClose" type="button" aria-label="Fechar configurações">×</button>
+      <p class="eyebrow">Preferências</p>
+      <h2 id="settingsTitle">Configurações</h2>
+      <p>Escolhe a aparência do portal. A preferência fica guardada neste dispositivo.</p>
+      <label class="theme-field" for="themeSelect">Tema
+        <select id="themeSelect">
+          <option value="auto">Automático</option>
+          <option value="light">Claro</option>
+          <option value="dark">Escuro</option>
+        </select>
+      </label>
+    </section>
+  </div>
 
   <aside class="mobile-sheet" id="mobileSheet" aria-label="Menu móvel">
     <div class="sheet-head">
@@ -63,6 +87,7 @@
     <a class="sheet-link active" href="perfil.html" aria-current="page">Meu Perfil</a>
     <a class="sheet-link" href="index.html#cursos">Catálogo de cursos</a>
     <a class="sheet-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte via WhatsApp</a>
+    <button class="sheet-link sheet-button" type="button" data-action="settings">Configurações</button>
     <button class="sheet-link sheet-logout" id="mobileLogout" type="button">Sair</button>
   </aside>
 

@@ -39,3 +39,46 @@ body{background:linear-gradient(180deg,#fff 0%,#fbfcfd 52%,#f7f9fb 100%)}
 .course-option{transition:border-color .18s,background .18s}
 .course-option:hover{border-color:rgba(245,166,35,.55);background:#fffaf1}
 @media(max-width:600px){.hero-panel{border-radius:20px}.portal-card{border-radius:15px}.site-footer{padding-bottom:30px}}
+
+/* Menu da conta acionado pelo avatar */
+.avatar-wrap{position:relative}
+.avatar-trigger{display:flex;align-items:center;gap:8px;padding:5px 8px 5px 5px;border:0;border-radius:12px;background:transparent;color:var(--navy);font:700 .88rem 'Barlow',Arial,sans-serif}
+.avatar-trigger:hover,.avatar-trigger[aria-expanded="true"]{background:var(--surface)}
+.avatar-chevron{color:var(--muted);font-size:1rem;line-height:1;transition:transform .18s var(--ease)}
+.avatar-trigger[aria-expanded="true"] .avatar-chevron{transform:rotate(180deg)}
+.avatar-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:40;width:210px;padding:7px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 16px 38px rgba(13,27,42,.14);opacity:0;visibility:hidden;transform:translateY(-5px);transition:opacity .18s var(--ease),transform .18s var(--ease)}
+.avatar-menu.open{opacity:1;visibility:visible;transform:translateY(0)}
+.avatar-menu-item{display:flex;align-items:center;width:100%;min-height:38px;padding:9px 10px;border:0;border-radius:9px;background:transparent;color:var(--navy);font:600 .88rem 'Barlow',Arial,sans-serif;text-align:left}
+.avatar-menu-item:hover{background:var(--surface)}
+.avatar-menu-item.danger{color:#c03b3b}
+.avatar-menu-item.danger:hover{background:#fff1f1}
+.avatar-menu-separator{height:1px;margin:5px 4px;background:var(--line)}
+.sheet-button{font-weight:600}
+@media(max-width:600px){.avatar-menu{right:-5px}.avatar-trigger .profile-label{display:none}.avatar-trigger{padding-right:5px}.avatar-chevron{display:none}}
+
+/* Configurações e temas */
+.settings-overlay{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(7,20,31,.52)}
+.settings-overlay[hidden]{display:none}
+.settings-modal{position:relative;width:min(100%,440px);padding:30px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(13,27,42,.2)}
+.settings-modal h2{margin:0 0 8px;color:var(--navy);font:800 2rem/1 'Barlow Condensed',sans-serif}
+.settings-modal>p:not(.eyebrow){margin:0;color:var(--muted);font-size:.94rem}
+.settings-close{position:absolute;top:12px;right:12px;width:34px;height:34px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:1.5rem;line-height:1}
+.settings-close:hover{background:var(--surface);color:var(--navy)}
+.theme-field{display:grid;gap:7px;margin-top:24px;color:var(--navy);font-size:.88rem;font-weight:700}
+.theme-field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit}
+.theme-field select:focus{border-color:var(--gold);outline:0;box-shadow:0 0 0 3px rgba(245,166,35,.14)}
+body.theme-dark{color:#f4f7fa;background:linear-gradient(180deg,#0b1825 0%,#0d1b2a 52%,#102438 100%)}
+body.theme-dark .site-header{background:rgba(13,27,42,.94);border-color:#244057}
+body.theme-dark .brand-copy strong,body.theme-dark .nav-link,body.theme-dark .profile-link,body.theme-dark .portal-card h2,body.theme-dark .page-intro h1,body.theme-dark .feature-card h2,body.theme-dark .faq-item summary,body.theme-dark .avatar-trigger,body.theme-dark .avatar-menu-item{color:#f4f7fa}
+body.theme-dark .brand-copy small,body.theme-dark .page-intro p,body.theme-dark .portal-card p,body.theme-dark .profile-security-card p:not(.eyebrow),body.theme-dark .feature-card p,body.theme-dark .faq-item p{color:#9fb1c0}
+body.theme-dark .nav-link:hover,body.theme-dark .nav-link.active,body.theme-dark .avatar-trigger:hover,body.theme-dark .avatar-trigger[aria-expanded="true"],body.theme-dark .avatar-menu-item:hover,body.theme-dark .button-ghost,body.theme-dark .portal-card,body.theme-dark .feature-card{background:#13283a}
+body.theme-dark .portal-card,body.theme-dark .feature-card,body.theme-dark .course-option,body.theme-dark .material-item,body.theme-dark .faq-section,body.theme-dark .faq-item,body.theme-dark .site-footer{border-color:#244057}
+body.theme-dark .avatar-menu,body.theme-dark .settings-modal{border-color:#29465e;background:#13283a}
+body.theme-dark .settings-modal h2,body.theme-dark .theme-field,body.theme-dark .theme-field select{color:#f4f7fa}
+body.theme-dark .theme-field select,body.theme-dark .profile-form input,body.theme-dark .security-field input{border-color:#31516b;background:#0d1b2a;color:#f4f7fa}
+body.theme-dark .material-item,body.theme-dark .next-module-box{background:#102438}
+body.theme-dark .support-banner{background:#3b2d16}
+body.theme-dark .support-banner strong{color:#fff3d6}
+body.theme-dark .support-banner p{color:#d7bd80}
+body.theme-dark .sheet-button{color:#f4f7fa}
+@media(max-width:600px){.settings-modal{padding:25px 21px}}
