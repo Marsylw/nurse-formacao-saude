@@ -1,0 +1,8 @@
+{
+  "name": "Nurse Formação em Saúde",
+  "description": "Plataforma de cursos e formação em saúde em Angola para enfermeiros, técnicos e auxiliares, com emissão de certificados oficiais.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

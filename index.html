@@ -3,416 +3,1235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  
-<title>Nurse Formação em  Saúde –</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Nurse Formação em Saúde – Cursos e Certificação em Angola</title>
+<meta name="description" content="Cursos práticos e certificados para enfermeiros, técnicos e auxiliares de saúde em Angola. Do Suporte Básico de Vida à UTI.">
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+  /* --- Navegação e Menu Estruturado --- */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13, 27, 42, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    height: 70px;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .nav-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+
+  .nav-brand-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a.nav-item {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a.nav-item:hover {
+    color: var(--orange);
+  }
+
+  .nav-item-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 0.25rem;
+  }
+
+  /* Botão Entrar integrado no menu */
+  .nav-link-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #a5cbf5;
+    background: rgba(30, 111, 200, 0.12);
+    border: 1px solid rgba(30, 111, 200, 0.35);
+    padding: 0.45rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link-login:hover {
+    color: #ffffff;
+    background: rgba(30, 111, 200, 0.25);
+    border-color: #55a2ea;
+  }
+
+  .nav-link-login svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Botão Inscrever-se integrado no menu */
+  .nav-link-cta {
+    display: inline-flex;
+    align-items: center;
+    background: var(--orange);
+    color: var(--navy);
+    padding: 0.48rem 1.15rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-link-cta:hover {
+    opacity: 0.9;
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .mobile-nav-drawer {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: #0d1b2a;
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 5%;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 99;
+  }
+
+  .mobile-nav-drawer.open {
+    display: flex;
+  }
+
+  .mobile-nav-drawer a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-drawer-auth {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  /* --- Hero Section Refinado --- */
+  .hero-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(30, 111, 200, 0.12);
+    border: 1px solid rgba(30, 111, 200, 0.3);
+    color: #8ec3f8;
+    padding: 0.35rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    text-decoration: none;
+  }
+
+  .hero-badge-pill:hover {
+    border-color: #55a2ea;
+  }
+
+  /* --- Barra de Controles e Filtros de Cursos --- */
+  .catalog-controls {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .catalog-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .catalog-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .catalog-search-wrap svg {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .catalog-search-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .catalog-search-input:focus {
+    border-color: var(--orange);
+  }
+
+  .view-switch-group {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .view-switch-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+  }
+
+  .view-switch-btn.active {
+    background: var(--navy2);
+    color: var(--white);
+    border: 1px solid var(--border);
+  }
+
+  .catalog-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .filter-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-pill:hover {
+    color: var(--white);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .filter-pill.active {
+    background: var(--orange);
+    color: var(--navy);
+    border-color: var(--orange);
+    font-weight: 700;
+  }
+
+  .catalog-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.75rem;
+  }
+
+  /* --- MODO TABELA CLÍNICA INSTITUCIONAL --- */
+  .courses-table-container {
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .courses-table th {
+    background: rgba(22, 41, 61, 0.8);
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .courses-table td {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+  }
+
+  .courses-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .table-course-title {
+    font-weight: 700;
+    color: var(--white);
+    font-size: 0.98rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .table-course-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .table-badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-dur-short { background: rgba(44, 184, 76, 0.12); color: #3cd05e; border: 1px solid rgba(44, 184, 76, 0.25); }
+  .badge-dur-mid   { background: rgba(30, 111, 200, 0.12); color: #72b2f5; border: 1px solid rgba(30, 111, 200, 0.25); }
+  .badge-dur-long  { background: rgba(245, 166, 35, 0.12); color: #f5a623; border: 1px solid rgba(245, 166, 35, 0.25); }
+
+  .table-price-main {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+  }
+
+  .table-price-cert {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .btn-table-action {
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 0.45rem 0.95rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-table-action:hover {
+    opacity: 0.85;
+  }
+
+  /* --- MODO CARTÕES EXECUTIVOS --- */
+  .courses-cards-container {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .courses-cards-container.active-view {
+    display: grid;
+  }
+
+  .courses-table-container.active-view {
+    display: block;
+  }
+
+  .exec-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+
+  .exec-card:hover {
+    border-color: var(--orange);
+  }
+
+  .exec-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .exec-category {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  .exec-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.35;
+    margin-bottom: 0.65rem;
+  }
+
+  .exec-topics {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .exec-topics li {
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .exec-topics li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--blue);
+  }
+
+  .exec-card-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 0.9rem;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* --- Sugestões Estratégicas para os Cursos --- */
+  .catalog-advice-box {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 1.4rem 1.6rem;
+    margin-top: 2rem;
+  }
+
+  .catalog-advice-box h4 {
+    font-size: 0.95rem;
+    color: #8dc2f7;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .catalog-advice-box p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 0.6rem;
+  }
+
+  .catalog-advice-box ul {
+    list-style: disc;
+    margin-left: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* --- Secção de Vantagens Institucionais --- */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .feature-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+  }
+
+  .feature-box-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--blue);
+    opacity: 0.7;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-box h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--white);
+  }
+
+  .feature-box p {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* --- Portal Banner --- */
+  .portal-cta-banner {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.8rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .portal-cta-banner h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .portal-cta-banner p {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  /* --- Formulário e Contacto --- */
+  .form-container {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.75rem;
+  }
+
+  .form-highlight {
+    animation: outlineFlash 1.2s ease;
+  }
+
+  @keyframes outlineFlash {
+    0% { outline: 2px solid var(--orange); }
+    100% { outline: 2px solid transparent; }
+  }
+
+  /* Responsividade */
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+    .portal-cta-banner { flex-direction: column; align-items: flex-start; }
+  }
+</style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- MENU DE NAVEGAÇÃO UNIFICADO -->
 <nav>
-  <div class="nav-logo" style="display: flex; align-items:center; gap: 0.6rem;">
-    <img src="IMG-20260827-WA0024.jpg">
-    <div class="nav-prNurse">
-      <span>NURSE</span>
-    <span>FORMAÇÃO EM SAÚDE</span>
-    </div>
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand-link">
+      <img src="Nurselogo.jpg" alt="Nurse Logo" class="nav-brand-logo" onerror="this.style.display='none'">
+      <div class="nav-prNurse">
+        <span>NURSE</span>
+        <span>FORMAÇÃO EM SAÚDE</span>
+      </div>
+    </a>
+
+    <!-- LINKS DO MENU COM ENTRAR E INSCREVER-SE INTEGRADOS -->
+    <ul class="nav-links">
+      <li><a href="#cursos" class="nav-item">Cursos</a></li>
+      <li><a href="#como-funciona" class="nav-item">Como Funciona</a></li>
+      <li><a href="#vantagens" class="nav-item">Vantagens</a></li>
+      <li><a href="#faq" class="nav-item">Perguntas</a></li>
+      <li><a href="#contacto" class="nav-item">Contacto</a></li>
+      <li class="nav-item-divider"></li>
+      <li>
+        <a href="login.html" class="nav-link-login" title="Aceder à conta de aluno">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Entrar
+        </a>
+      </li>
+      <li>
+        <a href="#contacto" class="nav-link-cta">Inscrever-se</a>
+      </li>
+    </ul>
+
+    <!-- Botão Hambúrguer Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu" onclick="toggleMobileMenu()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
   </div>
-  <ul class="nav-links">
-    <li><a href="#cursos">Cursos</a></li>
-    <li><a href="#como-funciona">Como Funciona</a></li>
-    <li><a href="#contacto">Contacto</a></li>
-  </ul>
-  <a href="#contacto" class="nav-cta">Inscrever-se</a>
 </nav>
 
-<!-- HERO -->
+<!-- Drawer Mobile -->
+<div class="mobile-nav-drawer" id="mobileDrawer">
+  <a href="#cursos" onclick="toggleMobileMenu()">Catálogo de Cursos</a>
+  <a href="#como-funciona" onclick="toggleMobileMenu()">Como Funciona</a>
+  <a href="#vantagens" onclick="toggleMobileMenu()">Vantagens da Formação</a>
+  <a href="#faq" onclick="toggleMobileMenu()">Perguntas Frequentes</a>
+  <a href="#contacto" onclick="toggleMobileMenu()">Contacto e Suporte</a>
+  <div class="mobile-drawer-auth">
+    <a href="login.html" class="nav-link-login" style="justify-content:center; padding:0.65rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+        <polyline points="10 17 15 12 10 7"></polyline>
+        <line x1="15" y1="12" x2="3" y2="12"></line>
+      </svg>
+      Entrar na Área do Aluno
+    </a>
+    <a href="#contacto" class="nav-link-cta" style="text-align:center; padding:0.65rem;" onclick="toggleMobileMenu()">
+      Fazer Inscrição
+    </a>
+  </div>
+</div>
+
+<!-- HERO SECTION -->
 <div class="hero">
   <div>
+    <a href="login.html" class="hero-badge-pill">
+      <span>Portal do Aluno</span>
+      <span style="color:var(--orange);">Aceder à conta</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </a>
     <div class="hero-eyebrow">Formação em Saúde · Angola</div>
     <h1>Forma profissionais de saúde <em>prontos para o terreno</em></h1>
-    <p>Cursos presenciais e online para enfermeiros, técnicos e auxiliares de saúde em Angola. Do SBV à UTI, com certificação.</p>
+    <p>Programas de capacitação técnica presencial e online para enfermeiros, técnicos de diagnóstico e auxiliares de saúde em Angola. Metodologia prática orientada para urgência, cuidados intensivos e bloco cirúrgico.</p>
+    
     <div class="hero-actions">
-      <a href="#cursos" class="btn-primary">Ver Cursos</a>
-      <a href="#como-funciona" class="btn-outline">Como Funciona</a>
+      <a href="#cursos" class="btn-primary">Ver Catálogo de Cursos</a>
+      <a href="login.html" class="btn-outline">Entrar na Área do Aluno</a>
     </div>
+
     <div class="hero-stats">
       <div>
         <div class="stat-val">20+</div>
         <div class="stat-label">Cursos disponíveis</div>
       </div>
       <div>
-        <div class="stat-val">10 Kz</div>
-        <div class="stat-label">Inscrição gratuita*</div>
+        <div class="stat-val">0 Kz</div>
+        <div class="stat-label">Inscrição gratuita (até 10 dias)</div>
       </div>
       <div>
         <div class="stat-val">100%</div>
-        <div class="stat-label">Com certificado</div>
+        <div class="stat-label">Com certificação oficial</div>
       </div>
     </div>
   </div>
+
   <div class="hero-visual">
     <div class="logo-placeholder">NURSE</div>
-    <div class="logo-sub">ASSISTÊNCIA DOMICILIAR</div>
+    <div class="logo-sub">INSTITUTO DE FORMAÇÃO EM SAÚDE</div>
     <div class="badge-row">
       <span class="badge">SBV / SAV</span>
-      <span class="badge">UTI</span>
-      <span class="badge">Feridas</span>
-      <span class="badge">ECG</span>
+      <span class="badge">UTI & Ventilação</span>
+      <span class="badge">Tratamento de Feridas</span>
+      <span class="badge">Eletrocardiograma</span>
       <span class="badge">Bloco Operatório</span>
-      <span class="badge">Farmácia</span>
+      <span class="badge">Balconista de Farmácia</span>
     </div>
   </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- CURSOS -->
+<!-- CATÁLOGO DE CURSOS E REORGANIZAÇÃO -->
 <section id="cursos">
   <div class="section-inner">
-    <div class="section-title">Tabela de <em>Cursos</em></div>
-    <div class="section-sub">Inscrição gratuita nos cursos até 10 dias · Taxa de 3.000 Kz nos cursos mensais</div>
+    <div class="section-title">Quadro Curricular de <em>Cursos</em></div>
+    <div class="section-sub">Consulte a oferta formativa institucional estruturada por especialidade clínica e tempo de formação</div>
 
-    <div class="course-grid">
-
-      <!-- 3 dias -->
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">3 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
+    <!-- Barra de Ferramentas: Busca, Filtros e Alternância de Visualização -->
+    <div class="catalog-controls">
+      <div class="catalog-top-bar">
+        <div class="catalog-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="courseSearchInput" 
+            class="catalog-search-input" 
+            placeholder="Pesquisar por designação ou especialidade (ex.: UTI, SBV, ECG, Curativos, Farmácia...)"
+            oninput="filtrarCatalogo()"
+          >
         </div>
-        <div class="course-name">Suporte Básico de Vida de Adulto (SBV) + DEA</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
+
+        <!-- Seletor de Modo de Exibição -->
+        <div class="view-switch-group">
+          <button class="view-switch-btn active" id="btnViewTable" onclick="mudarVisualizacao('table')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            Tabela Curricular
+          </button>
+          <button class="view-switch-btn" id="btnViewCards" onclick="mudarVisualizacao('cards')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Grade de Cartões
+          </button>
         </div>
       </div>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">3 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Suporte Avançado de Vida de Adulto (SAV)</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
+      <!-- Filtros por Área Clínica -->
+      <div class="catalog-filter-row">
+        <span style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-right: 0.25rem;">
+          Área:
+        </span>
+        <button class="filter-pill active" data-category="all" onclick="selecionarCategoria('all', this)">Todas as Áreas (20)</button>
+        <button class="filter-pill" data-category="urgencia" onclick="selecionarCategoria('urgencia', this)">Urgência & Trauma</button>
+        <button class="filter-pill" data-category="uti" onclick="selecionarCategoria('uti', this)">Terapia Intensiva (UTI)</button>
+        <button class="filter-pill" data-category="cirurgia" onclick="selecionarCategoria('cirurgia', this)">Cirúrgico & Procedimentos</button>
+        <button class="filter-pill" data-category="clinica" onclick="selecionarCategoria('clinica', this)">Enfermagem Clínica & Feridas</button>
+        <button class="filter-pill" data-category="farmacia" onclick="selecionarCategoria('farmacia', this)">Farmácia</button>
       </div>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">3 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Emergências Traumáticas – ABCDE do Trauma</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
+      <div class="catalog-status-bar">
+        <div>A apresentar <strong id="catalogVisibleCount" style="color:var(--orange);">20</strong> formações curriculares</div>
+        <div style="font-size: 0.76rem;">Inscrição gratuita em todos os módulos até 10 dias de duração</div>
       </div>
+    </div>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">3 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Manejo Inicial de Lesões por Pressão</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+    <!-- 1. MODO TABELA CURRICULAR INSTITUCIONAL (PADRÃO) -->
+    <div class="courses-table-container active-view" id="tableContainer">
+      <table class="courses-table">
+        <thead>
+          <tr>
+            <th>Curso & Disciplina</th>
+            <th>Área Técnica</th>
+            <th>Duração</th>
+            <th>Regime de Inscrição</th>
+            <th>Investimento</th>
+            <th style="text-align: right;">Ação</th>
+          </tr>
+        </thead>
+        <tbody id="coursesTableBody">
 
-      <!-- 7 dias -->
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">7 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Ventilação Mecânica para Enfermeiros</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <!-- 3 Dias -->
+          <tr data-category="urgencia" data-duration="3d" data-search="suporte basico de vida sbv dea emergencia parada">
+            <td>
+              <div class="table-course-title">Suporte Básico de Vida de Adulto (SBV) + DEA</div>
+              <div class="table-course-sub">Protocolos de reanimação cardiopulmonar e manuseio de desfibrilhador externo automático</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Urgência & Emergência</span></td>
+            <td><span class="table-badge badge-dur-short">3 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('SBV + DEA')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">7 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Feridas Complexas e Curativos Avançados</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="urgencia" data-duration="3d" data-search="suporte avancado de vida sav ritmos choque drogas">
+            <td>
+              <div class="table-course-title">Suporte Avançado de Vida de Adulto (SAV)</div>
+              <div class="table-course-sub">Abordagem de ritmos de paragem cardíaca, farmacologia e liderança em equipa de ressuscitação</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Urgência & Emergência</span></td>
+            <td><span class="table-badge badge-dur-short">3 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('SAV')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">7 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Atuação em Bloco Operatório (básico)</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="urgencia" data-duration="3d" data-search="emergencias traumaticas abcde do trauma imobilizacao hemorragia">
+            <td>
+              <div class="table-course-title">Emergências Traumáticas – ABCDE do Trauma</div>
+              <div class="table-course-sub">Sistematização da avaliação do paciente traumatizado grave e intervenções prioritárias</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Trauma & Socorrismo</span></td>
+            <td><span class="table-badge badge-dur-short">3 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Emergências Traumáticas – ABCDE do Trauma')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">7 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Urgências Cardiológicas</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="clinica" data-duration="3d" data-search="manejo inicial de lesoes por pressao escaras estadiamento coberturas">
+            <td>
+              <div class="table-course-title">Manejo Inicial de Lesões por Pressão</div>
+              <div class="table-course-sub">Classificação e medidas preventivas de estadiamento e terapêutica primária de escaras</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Cuidados Cutâneos</span></td>
+            <td><span class="table-badge badge-dur-short">3 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Manejo Inicial de Lesões por Pressão')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">7 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Sedação e Monitorização em UTI</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <!-- 7 Dias -->
+          <tr data-category="uti" data-duration="7d" data-search="ventilacao mecanica para enfermeiros modos assincronias desmame">
+            <td>
+              <div class="table-course-title">Ventilação Mecânica para Enfermeiros</div>
+              <div class="table-course-sub">Monitorização de parâmetros ventilatórios invasivos, ajuste de alarmes e desmame</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Terapia Intensiva</span></td>
+            <td><span class="table-badge badge-dur-mid">7 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Ventilação Mecânica para Enfermeiros')">Inscrever</button>
+            </td>
+          </tr>
 
-      <!-- 10 dias -->
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">10 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Gestão de Material e Esterilização (CME)</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="clinica" data-duration="7d" data-search="feridas complexas e curativos avancados debridamento hidrogel">
+            <td>
+              <div class="table-course-title">Feridas Complexas e Curativos Avançados</div>
+              <div class="table-course-sub">Avaliação do leito da lesão, tipos de coberturas ativas e conduta em feridas crónicas</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Estomaterapia</span></td>
+            <td><span class="table-badge badge-dur-mid">7 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Feridas Complexas e Curativos Avançados')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">10 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Cuidados Intensivos Pediátricos e Adultos</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="cirurgia" data-duration="7d" data-search="atuacao em bloco operatorio basico assepsia instrumentacao">
+            <td>
+              <div class="table-course-title">Atuação em Bloco Operatório (Básico)</div>
+              <div class="table-course-sub">Procedimentos de assepsia, funções do enfermeiro circulante e princípios de instrumentação</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Cirúrgico</span></td>
+            <td><span class="table-badge badge-dur-mid">7 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Atuação em Bloco Operatório')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">10 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Técnicas de Abordagem da Via Aérea (Intubação)</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="urgencia" data-duration="7d" data-search="urgencias cardiologicas enfarte iam dor toracica arritmias">
+            <td>
+              <div class="table-course-title">Urgências Cardiológicas</div>
+              <div class="table-course-sub">Abordagem de síndromes coronarianas agudas, arritmias graves e insuficiência cardíaca</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Cardiologia Clínica</span></td>
+            <td><span class="table-badge badge-dur-mid">7 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Urgências Cardiológicas')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">10 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Hemotransfusão Segura e Reações Transfusionais</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="uti" data-duration="7d" data-search="sedacao e monitorizacao em uti rass analgesia bombas">
+            <td>
+              <div class="table-course-title">Sedação e Monitorização em UTI</div>
+              <div class="table-course-sub">Escalas clínicas de sedação, titulação contínua de drogas vasoativas e vigilância de delirium</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Cuidados Intensivos</span></td>
+            <td><span class="table-badge badge-dur-mid">7 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Sedação e Monitorização em UTI')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">10 dias</span>
-          <span class="tag tag-free">Inscrição Grátis</span>
-        </div>
-        <div class="course-name">Controlo de Infecção Relacionada à Assistência (IRAS)</div>
-        <div class="course-includes">📄 Material de apoio digital</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">10.000 Kz</div>
-            <div class="price-cert">+ 2.500 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <!-- 10 Dias -->
+          <tr data-category="cirurgia" data-duration="10d" data-search="gestao de material e esterilizacao cme autoclave rastreabilidade">
+            <td>
+              <div class="table-course-title">Gestão de Material e Esterilização (CME)</div>
+              <div class="table-course-sub">Fluxos da central de material, indicadores biológicos, autoclave e controle de qualidade</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Gestão Hospitalar</span></td>
+            <td><span class="table-badge badge-dur-mid">10 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Gestão de Material e Esterilização (CME)')">Inscrever</button>
+            </td>
+          </tr>
 
-      <!-- 1 mês -->
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">1 mês</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Emergências e Urgências Hospitalares</div>
-        <div class="course-includes">📄 Material digital + estudo de caso</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">12.000 Kz</div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="uti" data-duration="10d" data-search="cuidados intensivos pediatricos e adultos utip pediatria neonato">
+            <td>
+              <div class="table-course-title">Cuidados Intensivos Pediátricos e Adultos</div>
+              <div class="table-course-sub">Diferenças anatomo-fisiológicas na assistência crítica e cálculo rigoroso de dosagens pediátricas</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Pediatria & UTI</span></td>
+            <td><span class="table-badge badge-dur-mid">10 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Cuidados Intensivos Pediátricos e Adultos')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">1 mês</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Monitorização Hemodinâmica em UTI</div>
-        <div class="course-includes">📄 Material digital + prática supervisionada</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">12.000 Kz</div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="cirurgia" data-duration="10d" data-search="tecnicas de abordagem da via aerea intubacao sequencia rapida sri">
+            <td>
+              <div class="table-course-title">Técnicas de Abordagem da Via Aérea (Intubação)</div>
+              <div class="table-course-sub">Sequência rápida de intubação orotraqueal e dispositivos supraglóticos para via aérea difícil</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Procedimentos Críticos</span></td>
+            <td><span class="table-badge badge-dur-mid">10 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Técnicas de Abordagem da Via Aérea')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">1 mês</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Feridas, Curativos e Terapias Avançadas</div>
-        <div class="course-includes">📄 Material digital + prática supervisionada</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">12.000 Kz</div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="clinica" data-duration="10d" data-search="hemotransfusao segura e reacoes transfusionais sangue hemoderivados">
+            <td>
+              <div class="table-course-title">Hemotransfusão Segura e Reações Transfusionais</div>
+              <div class="table-course-sub">Boas práticas na administração de hemocomponentes, rastreabilidade e notificação de incidentes</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Hematologia Clínica</span></td>
+            <td><span class="table-badge badge-dur-mid">10 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Hemotransfusão Segura')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">1 mês</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Emergências Obstétricas</div>
-        <div class="course-includes">📄 Material digital + prática supervisionada</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">12.000 Kz</div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="clinica" data-duration="10d" data-search="controlo de infeccao relacionada a assistencia iras biosseguranca precaucoes">
+            <td>
+              <div class="table-course-title">Controlo de Infecção Relacionada à Assistência (IRAS)</div>
+              <div class="table-course-sub">Medidas de isolamento, bundles de prevenção hospitalar e políticas de uso prudente de antimicrobianos</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Biossegurança</span></td>
+            <td><span class="table-badge badge-dur-mid">10 dias</span></td>
+            <td><span style="color:#3cd05e; font-size:0.8rem; font-weight:600;">Inscrição Gratuita</span></td>
+            <td>
+              <div class="table-price-main">10.000 Kz</div>
+              <div class="table-price-cert">+ 2.500 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Controlo de Infecção (IRAS)')">Inscrever</button>
+            </td>
+          </tr>
 
-      <div class="course-card">
-        <div class="course-meta">
-          <span class="tag tag-dur">1 mês</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Eletrocardiograma em Enfermagem</div>
-        <div class="course-includes">📄 Material digital + prática supervisionada</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">12.000 Kz</div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <!-- 1 Mês -->
+          <tr data-category="urgencia" data-duration="1m" data-search="emergencias e urgencias hospitalares triagem casos clinicos">
+            <td>
+              <div class="table-course-title">Emergências e Urgências Hospitalares</div>
+              <div class="table-course-sub">Classificação e priorização de risco em pronto-atendimento, choque e emergências metabólicas</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Urgência Hospitalar</span></td>
+            <td><span class="table-badge badge-dur-long">1 mês</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">12.000 Kz</div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Emergências e Urgências Hospitalares')">Inscrever</button>
+            </td>
+          </tr>
 
-      <!-- 6 meses -->
-      <div class="course-card" style="border-color: rgba(245,166,35,0.4);">
-        <div class="course-meta">
-          <span class="tag tag-dur">6 meses</span>
-          <span class="tag tag-paid">Inscrição 3.000 Kz</span>
-        </div>
-        <div class="course-name">Curso de Balconista de Farmácia</div>
-        <div class="course-includes">📄 Material digital + prática supervisionada + estágio</div>
-        <div class="course-pricing">
-          <div>
-            <div class="price-main">15.000 Kz<small style="font-size:.7rem;color:var(--muted)">/mês</small></div>
-            <div class="price-cert">+ 3.000 Kz certificado</div>
-          </div>
-          <a href="#contacto" class="btn-enroll">Inscrever</a>
-        </div>
-      </div>
+          <tr data-category="uti" data-duration="1m" data-search="monitorizacao hemodinamica em uti pressao arterial invasiva pai debito">
+            <td>
+              <div class="table-course-title">Monitorização Hemodinâmica em UTI</div>
+              <div class="table-course-sub">Interpretação de cateteres venosos centrais, linhas arteriais invasivas e resposta volêmica</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Cuidados Intensivos</span></td>
+            <td><span class="table-badge badge-dur-long">1 mês</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">12.000 Kz</div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Monitorização Hemodinâmica em UTI')">Inscrever</button>
+            </td>
+          </tr>
+
+          <tr data-category="clinica" data-duration="1m" data-search="feridas curativos e terapias avancadas pressao negativa vacuo">
+            <td>
+              <div class="table-course-title">Feridas, Curativos e Terapias Avançadas</div>
+              <div class="table-course-sub">Terapia por pressão negativa, biomateriais e conduta clínica em lesões de alta complexidade</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Estomaterapia Avançada</span></td>
+            <td><span class="table-badge badge-dur-long">1 mês</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">12.000 Kz</div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Feridas, Curativos e Terapias Avançadas')">Inscrever</button>
+            </td>
+          </tr>
+
+          <tr data-category="clinica" data-duration="1m" data-search="emergencias obstetricas eclampsia parto hemorragia pos parto">
+            <td>
+              <div class="table-course-title">Emergências Obstétricas</div>
+              <div class="table-course-sub">Protocolos em síndromes hipertensivas da gravidez, hemorragia pós-parto e acolhimento obstétrico</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Saúde Materna</span></td>
+            <td><span class="table-badge badge-dur-long">1 mês</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">12.000 Kz</div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Emergências Obstétricas')">Inscrever</button>
+            </td>
+          </tr>
+
+          <tr data-category="clinica" data-duration="1m" data-search="eletrocardiograma em enfermagem ecg derivacoes arritmias isquemia">
+            <td>
+              <div class="table-course-title">Eletrocardiograma em Enfermagem</div>
+              <div class="table-course-sub">Técnica de registo das 12 derivações, reconhecimento imediato de isquemia e bloqueios de condução</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Diagnóstico Clínico</span></td>
+            <td><span class="table-badge badge-dur-long">1 mês</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">12.000 Kz</div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" onclick="inscreverCursoDireto('Eletrocardiograma em Enfermagem')">Inscrever</button>
+            </td>
+          </tr>
+
+          <!-- 6 Meses -->
+          <tr data-category="farmacia" data-duration="6m" data-search="curso de balconista de farmacia dispensacao medicamentos estagio">
+            <td>
+              <div class="table-course-title">Curso de Balconista de Farmácia</div>
+              <div class="table-course-sub">Farmacologia geral, interpretação de prescrições, dispensação segura e estágio em ambiente real</div>
+            </td>
+            <td><span style="color:var(--muted); font-size:0.8rem;">Farmacêutica</span></td>
+            <td><span class="table-badge badge-dur-long">6 meses</span></td>
+            <td><span style="color:#8fa8bf; font-size:0.8rem;">Taxa de 3.000 Kz</span></td>
+            <td>
+              <div class="table-price-main">15.000 Kz <small style="font-size:0.75rem; color:var(--muted); font-weight:normal;">/mês</small></div>
+              <div class="table-price-cert">+ 3.000 Kz certificado</div>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-table-action" style="background:var(--orange); color:var(--navy); font-weight:700;" onclick="inscreverCursoDireto('Balconista de Farmácia')">Inscrever</button>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. MODO GRADE DE CARTÕES EXECUTIVOS (ALTERNATIVA) -->
+    <div class="courses-cards-container" id="cardsContainer">
+
+      <!-- Gerado via JavaScript ou estruturado em cards idênticos aos dados da tabela -->
+      <div id="cardsDynamicList" style="display: contents;"></div>
 
     </div>
 
-    <div class="notes-box">
-      <h3>Notas Importantes</h3>
+    <!-- Mensagem de Vazio -->
+    <div id="catalogEmptyMessage" style="display:none; text-align:center; padding:3rem 1.5rem; background:var(--card); border:1px dashed var(--border); border-radius:8px; margin-top:1rem;">
+      <p style="color:var(--white); font-weight:600; font-size:1rem; margin-bottom:0.25rem;">Nenhum curso encontrado</p>
+      <p style="color:var(--muted); font-size:0.85rem;">Não foram localizados cursos que correspondam aos filtros ou termos pesquisados.</p>
+      <button onclick="redefinirFiltros()" style="margin-top:0.75rem; background:transparent; border:1px solid var(--border); color:var(--orange); padding:0.4rem 1rem; border-radius:4px; font-size:0.82rem; cursor:pointer;">
+        Limpar Filtros e Mostrar Todos
+      </button>
+    </div>
+
+    <!-- Caixa de Análise e Sugestões sobre a Apresentação dos Cursos -->
+    <div class="catalog-advice-box">
+      <h4>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Proposta Estrutural para Apresentação dos Cursos (Recomendação Académica)
+      </h4>
+      <p>
+        Para um instituto de saúde em Angola, apresentar 20 cursos em blocos soltos gera ruído visual. A abordagem institucional recomendada (já aplicada nesta versão) assenta em 3 pilares:
+      </p>
       <ul>
-        <li>O valor do certificado é sempre separado do valor do curso</li>
-        <li>Cursos até 10 dias têm inscrição gratuita</li>
-        <li>Cursos de 1 mês ou mais têm taxa de inscrição de 3.000 Kz</li>
-        <li>Todos os cursos incluem material digital (protocolos, manuais, checklists)</li>
-        <li>Todos os cursos exigem participação em casos reais ou simulados para conclusão</li>
+        <li><strong>Visualização em Tabela Curricular por Nível:</strong> Permite aos enfermeiros, médicos chefes e diretores de clínicas consultar rapidamente duração, tópicos e custos sem rolagem excessiva.</li>
+        <li><strong>Trilhas Clínicas por Especialidade:</strong> Agrupamento por rota profissional (Urgência & Trauma, Terapia Intensiva/UTI, Bloco/Cirurgia, Estomaterapia/Cuidados de Enfermagem e Farmácia).</li>
+        <li><strong>Filtro de Duração com Diferenciação de Custos:</strong> Destacar claramente que os cursos até 10 dias possuem isenção de matrícula, enquanto os cursos semestrais contam com estágio prático hospitalar supervisionado.</li>
       </ul>
+    </div>
+
+    <!-- BANNER DE ACESSO AO PORTAL DO ALUNO -->
+    <div class="portal-cta-banner">
+      <div>
+        <h3>Já tem a sua inscrição registada?</h3>
+        <p>Aceda diretamente à sua Área do Aluno para consultar o cronograma das aulas e materiais pedagógicos digitais.</p>
+      </div>
+      <div>
+        <a href="login.html" class="nav-link-login" style="padding:0.75rem 1.4rem; font-size:0.92rem; font-weight:700;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Entrar na Área do Aluno
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VANTAGENS INSTITUCIONAIS -->
+<section id="vantagens">
+  <div class="section-inner">
+    <div class="section-title">Vantagens Formativas <em>Nurse</em></div>
+    <div class="section-sub">Diferenciais pedagógicos voltados para a realidade dos serviços de saúde em Angola</div>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-box-num">01</div>
+        <h4>Corpo Docente Ativo no Terreno</h4>
+        <p>Instrutores clínicos com vivência hospitalar diária nas principais unidades de urgência, terapia intensiva e bloco operatório.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-num">02</div>
+        <h4>Treino Prático com Manequins</h4>
+        <p>Simulação realística de reanimação cardiopulmonar, intubação e curativos avançados para desenvolver segurança operacional.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-num">03</div>
+        <h4>Certificação Reconhecida</h4>
+        <p>Certificados com validação digital e conformidade técnica para progressão em concursos e qualificações hospitalares.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-num">04</div>
+        <h4>Acesso Digital aos Protocolos</h4>
+        <p>Guias, manuais de conduta e esquemas posológicos disponíveis online através da Área do Aluno.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -423,27 +1242,28 @@
 <section id="como-funciona">
   <div class="section-inner">
     <div class="section-title">Como <em>Funciona</em></div>
-    <div class="section-sub">Processo simples, do registo ao certificado</div>
+    <div class="section-sub">Etapas do processo formativo, da escolha do módulo à certificação</div>
+    
     <div class="steps">
       <div class="step">
         <div class="step-num">01</div>
-        <h3>Escolhe o curso</h3>
-        <p>Navega pelo catálogo e selecciona o curso adequado ao teu perfil e objectivos.</p>
+        <h3>Seleção do Curso</h3>
+        <p>Consulte a grade curricular e escolha o curso correspondente à sua área de especialização pretendida.</p>
       </div>
       <div class="step">
         <div class="step-num">02</div>
-        <h3>Inscreve-te</h3>
-        <p>Preenche o formulário de inscrição e efectua o pagamento via Multicaixa, Express Pay ou transferência bancária.</p>
+        <h3>Registo de Inscrição</h3>
+        <p>Preencha os dados e defina uma palavra-passe segura para criação instantânea da sua conta de aluno.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
-        <h3>Participa</h3>
-        <p>Frequenta as aulas presenciais ou online e completa os casos práticos e estudos dirigidos.</p>
+        <h3>Frequência Pedagógica</h3>
+        <p>Participe nas sessões teóricas e nos workshops práticos presenciais ou orientados à distância.</p>
       </div>
       <div class="step">
         <div class="step-num">04</div>
-        <h3>Certifica-te</h3>
-        <p>Após conclusão, recebe o teu certificado digital mediante pagamento da taxa de emissão.</p>
+        <h3>Validação & Certificado</h3>
+        <p>Conclua a avaliação das competências e solicite a emissão do certificado técnico com registo de autenticidade.</p>
       </div>
     </div>
   </div>
@@ -451,94 +1271,189 @@
 
 <div class="divider"></div>
 
-<!-- CONTACTO -->
+<!-- PERGUNTAS FREQUENTES (FAQ) -->
+<section id="faq">
+  <div class="section-inner">
+    <div class="section-title">Perguntas <em>Frequentes</em></div>
+    <div class="section-sub">Esclarecimentos formais sobre procedimentos, credenciação e pagamentos</div>
+
+    <div class="faq-list">
+      <div class="faq-item active">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>Como é feito o acesso à Área do Aluno?</span>
+          <span class="faq-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </button>
+        <div class="faq-answer">
+          Após submeter o formulário de inscrição, a sua conta de aluno é gerada automaticamente no sistema. Para aceder, basta clicar na opção <strong>Entrar</strong> localizada no menu superior e introduzir o seu e-mail e a palavra-passe que definiu.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>Quais as modalidades de pagamento aceites?</span>
+          <span class="faq-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </button>
+        <div class="faq-answer">
+          São aceites pagamentos através de Multicaixa (referência ou POS), Express Pay e transferência bancária direta (BFA, BAI, Millennium Atlântico, etc.).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span>Quando é disponibilizado o certificado de conclusão?</span>
+          <span class="faq-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </button>
+        <div class="faq-answer">
+          O certificado digital oficial é emitido no prazo de 48 horas úteis após a aprovação na avaliação prática e regularização da respetiva taxa de emissão documental.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACTO & FORMULÁRIO DE INSCRIÇÃO -->
 <section id="contacto">
   <div class="section-inner">
     <div class="contact-grid">
       <div class="contact-info">
-        <h2>Fale <em>connosco</em></h2>
-        <p>Tens dúvidas sobre algum curso ou queres inscrever a tua equipa? Entra em contacto.</p>
+        <h2>Contacto & <em>Inscrições</em></h2>
+        <p>Submeta os seus dados para reserva de vaga na próxima turma ou para solicitar apoio institucional.</p>
+        
         <div class="contact-methods">
           <div class="contact-method">
-            <span class="contact-method-icon">📍</span>
             <div class="contact-method-text">
-              <span class="contact-method-label">Localização</span>
+              <span class="contact-method-label">Sede e Formação</span>
               Luanda, Angola
             </div>
           </div>
           <div class="contact-method">
-            <span class="contact-method-icon">💳</span>
             <div class="contact-method-text">
-              <span class="contact-method-label">Pagamento aceite</span>
-              Multicaixa · Express Pay · Transferência · Cartão
+              <span class="contact-method-label">Contacto Telefónico / WhatsApp</span>
+              <a href="https://wa.me/244956555380" target="_blank" style="color:var(--white); text-decoration:none;">+244 956 555 380</a>
             </div>
           </div>
           <div class="contact-method">
-            <span class="contact-method-icon">🕐</span>
             <div class="contact-method-text">
-              <span class="contact-method-label">Horário</span>
-              Segunda a Sexta, 8h – 17h (WAT)
+              <span class="contact-method-label">Pagamentos Admitidos</span>
+              Multicaixa · Express Pay · Transferência Bancária
             </div>
           </div>
+          <div class="contact-method">
+            <div class="contact-method-text">
+              <span class="contact-method-label">Horário de Atendimento Institucional</span>
+              Segunda a Sexta-feira, das 08h00 às 17h00 (WAT)
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem; background:var(--card); border:1px solid var(--border); border-radius:6px; padding:1.25rem;">
+          <div style="font-weight:700; color:var(--orange); font-size:0.95rem; margin-bottom:0.25rem;">Já possui uma conta registada?</div>
+          <p style="font-size:0.84rem; color:var(--muted); margin-bottom:0.75rem;">Para consultar o estado da matrícula, não necessita preencher nova inscrição.</p>
+          <a href="login.html" class="nav-link-login" style="display:inline-flex;">
+            Aceder ao Login do Aluno →
+          </a>
         </div>
       </div>
 
       <div>
-        <div class="contact-form" id="inscricao-form">
+        <div class="contact-form form-container" id="inscricao-form">
+
+          <div style="margin-bottom:0.75rem;">
+            <h3 style="font-size:1.25rem; font-weight:700; color:var(--white);">Boletim de Inscrição Oficial</h3>
+            <p style="font-size:0.8rem; color:var(--muted);">Criação de credenciais de aluno e seleção da formação</p>
+          </div>
 
           <!-- Feedback de estado -->
-          <div id="form-feedback" style="display:none; padding:1rem; border-radius:6px; font-size:0.9rem; font-weight:600; margin-bottom:0.5rem;"></div>
+          <div id="form-feedback" style="display:none; padding:0.85rem; border-radius:4px; font-size:0.88rem; font-weight:600; margin-bottom:0.75rem;"></div>
 
-          <input id="campo-nome" type="text" placeholder="Nome completo" required>
-          <input id="campo-telefone" type="tel" placeholder="Telefone (ex: +244 9XX XXX XXX)" required>
-          <input id="campo-email" type="email" placeholder="Email *" required>
-          <input id="campo-senha" type="password" placeholder="Criar palavra-passe *" required>
-          <select id="campo-curso" required>
-            <option value="" disabled selected>Seleccionar curso de interesse</option>
-            <optgroup label="3 dias">
-              <option value="SBV + DEA">SBV + DEA</option>
-              <option value="SAV">SAV</option>
-              <option value="Emergências Traumáticas – ABCDE do Trauma">Emergências Traumáticas – ABCDE do Trauma</option>
-              <option value="Manejo Inicial de Lesões por Pressão">Manejo Inicial de Lesões por Pressão</option>
-            </optgroup>
-            <optgroup label="7 dias">
-              <option value="Ventilação Mecânica para Enfermeiros">Ventilação Mecânica para Enfermeiros</option>
-              <option value="Feridas Complexas e Curativos Avançados">Feridas Complexas e Curativos Avançados</option>
-              <option value="Atuação em Bloco Operatório">Atuação em Bloco Operatório</option>
-              <option value="Urgências Cardiológicas">Urgências Cardiológicas</option>
-              <option value="Sedação e Monitorização em UTI">Sedação e Monitorização em UTI</option>
-            </optgroup>
-            <optgroup label="10 dias">
-              <option value="Gestão de Material e Esterilização (CME)">Gestão de Material e Esterilização (CME)</option>
-              <option value="Cuidados Intensivos Pediátricos e Adultos">Cuidados Intensivos Pediátricos e Adultos</option>
-              <option value="Técnicas de Abordagem da Via Aérea">Técnicas de Abordagem da Via Aérea</option>
-              <option value="Hemotransfusão Segura">Hemotransfusão Segura</option>
-              <option value="Controlo de Infecção (IRAS)">Controlo de Infecção (IRAS)</option>
-            </optgroup>
-            <optgroup label="1 mês">
-              <option value="Emergências e Urgências Hospitalares">Emergências e Urgências Hospitalares</option>
-              <option value="Monitorização Hemodinâmica em UTI">Monitorização Hemodinâmica em UTI</option>
-              <option value="Feridas, Curativos e Terapias Avançadas">Feridas, Curativos e Terapias Avançadas</option>
-              <option value="Emergências Obstétricas">Emergências Obstétricas</option>
-              <option value="Eletrocardiograma em Enfermagem">Eletrocardiograma em Enfermagem</option>
-            </optgroup>
-            <optgroup label="6 meses">
-              <option value="Balconista de Farmácia">Balconista de Farmácia</option>
-            </optgroup>
-          </select>
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Nome Completo do Aluno *</label>
+            <input id="campo-nome" type="text" placeholder="Ex.: Maria dos Santos Silva" required>
+          </div>
 
-          <select id="campo-pagamento" required>
-            <option value="" disabled selected>Forma de pagamento preferida</option>
-            <option value="multicaixa">Multicaixa</option>
-            <option value="express_pay">Express Pay</option>
-            <option value="transferencia">Transferência Bancária</option>
-            <option value="cartao">Cartão</option>
-          </select>
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Contacto Telefónico (Angola) *</label>
+            <input id="campo-telefone" type="tel" placeholder="Ex.: +244 9XX XXX XXX" required>
+          </div>
 
-          <textarea id="campo-mensagem" placeholder="Mensagem ou dúvida (opcional)"></textarea>
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Endereço de E-mail *</label>
+            <input id="campo-email" type="email" placeholder="nome@exemplo.com" required>
+          </div>
 
-          <button class="btn-primary" id="btn-enviar" onclick="enviarInscricao()">
-            Enviar Inscrição
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Definir Palavra-passe de Acesso (mínimo 6 caracteres) *</label>
+            <div style="position:relative;">
+              <input id="campo-senha" type="password" placeholder="Definir palavra-passe segura *" required style="padding-right: 2.75rem;">
+              <button type="button" onclick="alternarVisibilidadeSenha()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.75rem;" title="Mostrar ou ocultar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Curso Pretendido *</label>
+            <select id="campo-curso" required>
+              <option value="" disabled selected>Selecione o curso curricular</option>
+              <optgroup label="Cursos de 3 dias (Inscrição Gratuita)">
+                <option value="SBV + DEA">Suporte Básico de Vida (SBV) + DEA</option>
+                <option value="SAV">Suporte Avançado de Vida (SAV)</option>
+                <option value="Emergências Traumáticas – ABCDE do Trauma">Emergências Traumáticas – ABCDE do Trauma</option>
+                <option value="Manejo Inicial de Lesões por Pressão">Manejo Inicial de Lesões por Pressão</option>
+              </optgroup>
+              <optgroup label="Cursos de 7 dias (Inscrição Gratuita)">
+                <option value="Ventilação Mecânica para Enfermeiros">Ventilação Mecânica para Enfermeiros</option>
+                <option value="Feridas Complexas e Curativos Avançados">Feridas Complexas e Curativos Avançados</option>
+                <option value="Atuação em Bloco Operatório">Atuação em Bloco Operatório (Básico)</option>
+                <option value="Urgências Cardiológicas">Urgências Cardiológicas</option>
+                <option value="Sedação e Monitorização em UTI">Sedação e Monitorização em UTI</option>
+              </optgroup>
+              <optgroup label="Cursos de 10 dias (Inscrição Gratuita)">
+                <option value="Gestão de Material e Esterilização (CME)">Gestão de Material e Esterilização (CME)</option>
+                <option value="Cuidados Intensivos Pediátricos e Adultos">Cuidados Intensivos Pediátricos e Adultos</option>
+                <option value="Técnicas de Abordagem da Via Aérea">Técnicas de Abordagem da Via Aérea (Intubação)</option>
+                <option value="Hemotransfusão Segura">Hemotransfusão Segura e Reações Transfusionais</option>
+                <option value="Controlo de Infecção (IRAS)">Controlo de Infecção (IRAS)</option>
+              </optgroup>
+              <optgroup label="Cursos de 1 mês (Taxa de 3.000 Kz)">
+                <option value="Emergências e Urgências Hospitalares">Emergências e Urgências Hospitalares</option>
+                <option value="Monitorização Hemodinâmica em UTI">Monitorização Hemodinâmica em UTI</option>
+                <option value="Feridas, Curativos e Terapias Avançadas">Feridas, Curativos e Terapias Avançadas</option>
+                <option value="Emergências Obstétricas">Emergências Obstétricas</option>
+                <option value="Eletrocardiograma em Enfermagem">Eletrocardiograma em Enfermagem</option>
+              </optgroup>
+              <optgroup label="Cursos Profissionalizantes de 6 meses (Taxa de 3.000 Kz)">
+                <option value="Balconista de Farmácia">Balconista de Farmácia (com Estágio Prático)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Forma de Pagamento Pretendida *</label>
+            <select id="campo-pagamento" required>
+              <option value="" disabled selected>Selecione o meio de pagamento</option>
+              <option value="multicaixa">Multicaixa (Referência ou Terminal)</option>
+              <option value="express_pay">Express Pay</option>
+              <option value="transferencia">Transferência Bancária</option>
+              <option value="cartao">Cartão de Débito</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem; color:var(--muted); display:block; margin-bottom:0.25rem;">Observações ou Pedidos Adicionais (opcional)</label>
+            <textarea id="campo-mensagem" placeholder="Indique eventuais necessidades pedagógicas ou questões particulares..."></textarea>
+          </div>
+
+          <button class="btn-primary" id="btn-enviar" onclick="enviarInscricao()" style="width:100%; padding:0.85rem; font-size:0.95rem; font-weight:700; cursor:pointer;">
+            Submeter Inscrição
           </button>
         </div>
       </div>
@@ -547,36 +1462,241 @@
 </section>
 
 <div class="divider"></div>
+
+<!-- SECÇÃO DO CARROSSEL -->
 <section id="carousel-section" style="padding:20px 5%;"></section>
 
-  
-<!-- FOOTER -->
+<!-- RODAPÉ INSTITUCIONAL -->
 <footer>
   <div class="footer-logo">NURSE</div>
-  <p style="color:var(--muted);font-size:0.72rem;letter-spacing:0.1em;margin-bottom:0.75rem;">FORMAÇÃO EM SAÚDE</p>
+  <p style="color:var(--muted);font-size:0.72rem;letter-spacing:0.1em;margin-bottom:0.75rem;">FORMAÇÃO EM SAÚDE · LUANDA, ANGOLA</p>
   <div class="footer-links">
     <a href="#cursos">Cursos</a>
     <a href="#como-funciona">Como Funciona</a>
-      <a href="login.html">Área do Aluno</a>
+    <a href="#vantagens">Vantagens</a>
+    <a href="login.html" style="color:var(--orange); font-weight:600;">Entrar (Área do Aluno)</a>
+    <a href="#faq">Perguntas Frequentes</a>
     <a href="#contacto">Contacto</a>
+    <a href="https://wa.me/244956555380" target="_blank">Apoio WhatsApp</a>
   </div>
-  <p>© 2025 Nurse Formação em Saúde · Luanda, Angola · Todos os direitos reservados</p>
+  <p>© 2025 Nurse Formação em Saúde · Todos os direitos reservados</p>
 </footer>
 
+<!-- POPUP DE CONFIRMAÇÃO DE INSCRIÇÃO -->
+<div id="popup-overlay" style="
+  display:none; position:fixed; inset:0; z-index:999;
+  background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center;
+">
+  <div style="
+    background:#1a2e42; border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px; padding:2.2rem; max-width:440px; width:92%;
+    text-align:center; position:relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  ">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:#f5a623;margin-bottom:0.25rem;">
+      Inscrição Confirmada
+    </div>
+    <div id="popup-nome" style="font-size:1.1rem;font-weight:700;color:#ffffff;margin-bottom:0.5rem;"></div>
+    <div style="color:#8fa8bf;font-size:0.85rem;margin-bottom:0.8rem;">Foi registada com sucesso a vaga no módulo:</div>
+    <div id="popup-curso" style="background:rgba(30,111,200,0.15);border:1px solid rgba(30,111,200,0.3);color:#7dc0f5;border-radius:4px;padding:0.6rem 1rem;font-weight:600;font-size:0.92rem;margin-bottom:1.4rem;"></div>
+    <div style="background:rgba(44,184,76,0.1);border:1px solid rgba(44,184,76,0.25);border-radius:6px;padding:0.9rem;color:#a3bfd9;font-size:0.84rem;line-height:1.55;margin-bottom:1.5rem;">
+      A sua conta de estudante foi configurada. Pode aceder à Área do Aluno a qualquer momento pelo botão <strong>Entrar</strong>.
+    </div>
+    <div style="display:flex; gap:0.75rem;">
+      <button onclick="fecharPopup()" style="
+        flex:1; background:transparent; color:var(--muted);
+        border:1px solid var(--border); padding:0.7rem;
+        border-radius:4px; font-weight:600; font-size:0.85rem;
+        cursor:pointer; font-family:'Barlow',sans-serif;
+      ">Fechar</button>
 
-      
+      <a href="login.html" style="
+        flex:1; background:#f5a623; color:#0d1b2a;
+        border:none; padding:0.7rem;
+        border-radius:4px; font-weight:700; font-size:0.85rem;
+        cursor:pointer; font-family:'Barlow',sans-serif;
+        text-decoration:none; text-align:center; display:flex;
+        align-items:center; justify-content:center;
+      ">Entrar Agora →</a>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="carousel.js"></script>
+<script src="carousel.js"></script>
+
 <script>
+  // Inicialização do Supabase
+  const SUPABASE_URL = 'https://uzitnphltzblfccmiecf.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_8_3FrRYH5JSpdpi9sSv9Wg_T2ST8IGW';
+  const db = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-  
-  
-  const SUPABASE_URL = 'https://uzitnphltzblfccmiecf.supabase.co';      // ex: https://xyzxyz.supabase.co
-  const SUPABASE_KEY = 'sb_publishable_8_3FrRYH5JSpdpi9sSv9Wg_T2ST8IGW';    // anon / public key
+  // Estado dos Filtros do Catálogo
+  let categoriaAtiva = 'all';
 
+  function selecionarCategoria(cat, btn) {
+    categoriaAtiva = cat;
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    filtrarCatalogo();
+  }
 
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  function redefinirFiltros() {
+    categoriaAtiva = 'all';
+    const input = document.getElementById('courseSearchInput');
+    if (input) input.value = '';
+    document.querySelectorAll('.filter-pill').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-category') === 'all');
+    });
+    filtrarCatalogo();
+  }
 
+  function filtrarCatalogo() {
+    const termo = (document.getElementById('courseSearchInput').value || '').trim().toLowerCase();
+    
+    // Filtrar linhas da tabela
+    const rows = document.querySelectorAll('#coursesTableBody tr');
+    let visiveis = 0;
+
+    rows.forEach(row => {
+      const rowCat = row.getAttribute('data-category');
+      const rowSearch = (row.getAttribute('data-search') || '' + ' ' + row.innerText).toLowerCase();
+
+      const bateCat = (categoriaAtiva === 'all' || rowCat === categoriaAtiva);
+      const bateTermo = (!termo || rowSearch.includes(termo));
+
+      if (bateCat && bateTermo) {
+        row.style.display = '';
+        visiveis++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Sincronizar com os cards executivos
+    const cards = document.querySelectorAll('#cardsDynamicList .exec-card');
+    cards.forEach(card => {
+      const cardCat = card.getAttribute('data-category');
+      const cardSearch = (card.getAttribute('data-search') || '' + ' ' + card.innerText).toLowerCase();
+      const bateCat = (categoriaAtiva === 'all' || cardCat === categoriaAtiva);
+      const bateTermo = (!termo || cardSearch.includes(termo));
+      card.style.display = (bateCat && bateTermo) ? 'flex' : 'none';
+    });
+
+    // Contador e empty state
+    const counter = document.getElementById('catalogVisibleCount');
+    if (counter) counter.textContent = visiveis;
+
+    const emptyBox = document.getElementById('catalogEmptyMessage');
+    if (emptyBox) {
+      emptyBox.style.display = (visiveis === 0) ? 'block' : 'none';
+    }
+  }
+
+  // Alternância entre visualização em Tabela e Grade de Cartões
+  function mudarVisualizacao(tipo) {
+    const tableCont = document.getElementById('tableContainer');
+    const cardsCont = document.getElementById('cardsContainer');
+    const btnTable  = document.getElementById('btnViewTable');
+    const btnCards  = document.getElementById('btnViewCards');
+
+    if (tipo === 'cards') {
+      gerarCartoesExecutivosSeNecessario();
+      tableCont.classList.remove('active-view');
+      cardsCont.classList.add('active-view');
+      btnTable.classList.remove('active');
+      btnCards.classList.add('active');
+    } else {
+      cardsCont.classList.remove('active-view');
+      tableCont.classList.add('active-view');
+      btnCards.classList.remove('active');
+      btnTable.classList.add('active');
+    }
+  }
+
+  // Geração de cartões executivos sincronizados com a tabela
+  let cartoesGerados = false;
+  function gerarCartoesExecutivosSeNecessario() {
+    if (cartoesGerados) return;
+    const target = document.getElementById('cardsDynamicList');
+    if (!target) return;
+
+    const rows = document.querySelectorAll('#coursesTableBody tr');
+    target.innerHTML = '';
+
+    rows.forEach(row => {
+      const title = row.querySelector('.table-course-title').innerText;
+      const sub = row.querySelector('.table-course-sub').innerText;
+      const area = row.querySelector('td:nth-child(2)').innerText;
+      const dur = row.querySelector('.table-badge').innerText;
+      const preco = row.querySelector('.table-price-main').innerHTML;
+      const cert = row.querySelector('.table-price-cert').innerText;
+      const cat = row.getAttribute('data-category');
+      const search = row.getAttribute('data-search');
+
+      const card = document.createElement('div');
+      card.className = 'exec-card';
+      card.setAttribute('data-category', cat);
+      card.setAttribute('data-search', search);
+
+      card.innerHTML = `
+        <div>
+          <div class="exec-card-header">
+            <span class="exec-category">${area}</span>
+            <span class="table-badge badge-dur-mid">${dur}</span>
+          </div>
+          <h3 class="exec-title">${title}</h3>
+          <p style="font-size:0.82rem; color:var(--muted); line-height:1.45; margin-bottom:1rem;">${sub}</p>
+        </div>
+        <div class="exec-card-footer">
+          <div>
+            <div class="table-price-main">${preco}</div>
+            <div class="table-price-cert">${cert}</div>
+          </div>
+          <button class="btn-table-action" onclick="inscreverCursoDireto('${title.replace("'", "\\'")}')">Inscrever</button>
+        </div>
+      `;
+      target.appendChild(card);
+    });
+
+    cartoesGerados = true;
+    filtrarCatalogo();
+  }
+
+  // Inscrição Direta vinda da tabela ou cartões
+  function inscreverCursoDireto(nomeCurso) {
+    const select = document.getElementById('campo-curso');
+    if (select) {
+      for (let i = 0; i < select.options.length; i++) {
+        const val = select.options[i].value.toLowerCase();
+        const txt = select.options[i].text.toLowerCase();
+        const procurado = nomeCurso.toLowerCase();
+        if (val.includes(procurado) || txt.includes(procurado) || procurado.includes(val)) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    const sec = document.getElementById('contacto');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+
+    const formEl = document.getElementById('inscricao-form');
+    if (formEl) {
+      formEl.classList.remove('form-highlight');
+      void formEl.offsetWidth;
+      formEl.classList.add('form-highlight');
+    }
+
+    const campoNome = document.getElementById('campo-nome');
+    if (campoNome) {
+      setTimeout(() => campoNome.focus(), 600);
+    }
+  }
+
+  // Envio do formulário de inscrição
   async function enviarInscricao() {
     const feedback = document.getElementById('form-feedback');
     const btn      = document.getElementById('btn-enviar');
@@ -590,152 +1710,147 @@
     const mensagem  = document.getElementById('campo-mensagem').value.trim();
 
     if (!nome || !telefone || !email || !curso || !senha || !pagamento) {
-      mostrarFeedback('Por favor preenche todos os campos obrigatórios (*).', 'erro');
+      mostrarFeedback('Por favor preencha todos os campos obrigatórios (*).', 'erro');
       return;
     }
 
     if (senha.length < 6) {
-      mostrarFeedback('A palavra-passe deve ter pelo menos 6 caracteres.', 'erro');
+      mostrarFeedback('A palavra-passe deve conter pelo menos 6 caracteres.', 'erro');
       return;
     }
 
-    // Desactivar botão durante envio
+    if (!db) {
+      mostrarFeedback('Não foi possível conectar ao banco de dados.', 'erro');
+      return;
+    }
+
     btn.disabled = true;
-    btn.textContent = 'A enviar…';
+    btn.textContent = 'A processar inscrição…';
 
-    // 1) Criar a conta a sério no Supabase Auth
-    const { data: authData, error: authError } = await db.auth.signUp({
-      email,
-      password: senha
-    });
+    try {
+      // 1) Criar conta Supabase Auth
+      const { data: authData, error: authError } = await db.auth.signUp({
+        email,
+        password: senha,
+        options: {
+          data: { full_name: nome, telefone: telefone }
+        }
+      });
 
-    if (authError) {
-      mostrarFeedback(authError.message, 'erro');
+      if (authError) {
+        mostrarFeedback(authError.message, 'erro');
+        btn.disabled = false;
+        btn.textContent = 'Submeter Inscrição';
+        return;
+      }
+
+      const userId = authData && authData.user ? authData.user.id : null;
+
+      // 2) Gravar registo
+      const { error: dbError } = await db.from('inscricoes').insert({
+        nome,
+        telefone,
+        email,
+        curso,
+        pagamento,
+        mensagem: mensagem || null,
+        estado: 'pendente',
+        user_id: userId
+      });
+
+      if (dbError) {
+        console.error('Supabase erro:', dbError);
+        mostrarFeedback('Conta criada, mas houve uma falha ao arquivar a inscrição. Por favor contacte o suporte.', 'erro');
+        btn.disabled = false;
+        btn.textContent = 'Submeter Inscrição';
+        return;
+      }
+
+      // Sucesso
+      mostrarFeedback('Inscrição confirmada com sucesso! Os seus dados foram registados.', 'ok');
+      document.getElementById('campo-nome').value = '';
+      document.getElementById('campo-telefone').value = '';
+      document.getElementById('campo-email').value = '';
+      document.getElementById('campo-senha').value = '';
+      document.getElementById('campo-curso').value = '';
+      document.getElementById('campo-pagamento').value = '';
+      document.getElementById('campo-mensagem').value = '';
+      btn.textContent = 'Inscrição Submetida';
+
+      setTimeout(() => {
+        mostrarPopupBoasVindas(nome, curso);
+        btn.disabled = false;
+        btn.textContent = 'Submeter Inscrição';
+      }, 900);
+
+    } catch (err) {
+      console.error(err);
+      mostrarFeedback('Ocorreu um erro ao submeter a inscrição.', 'erro');
       btn.disabled = false;
-      btn.textContent = 'Enviar Inscrição';
-      return;
+      btn.textContent = 'Submeter Inscrição';
     }
-
-    const userId = authData.user ? authData.user.id : null;
-
-    // 2) Guardar o pedido de inscrição, ligado à conta (sem guardar a password)
-    const { error } = await db.from('inscricoes').insert({
-      nome,
-      telefone,
-      email,
-      curso,
-      pagamento,
-      mensagem: mensagem || null,
-      estado: 'pendente',
-      user_id: userId
-    });
-
-    if (error) {
-      console.error('Supabase erro:', error);
-      mostrarFeedback('A conta foi criada, mas houve um erro ao guardar a inscrição. Contacta-nos diretamente.', 'erro');
-      btn.disabled = false;
-      btn.textContent = 'Enviar Inscrição';
-      return;
-    }
-
-    // Sucesso — limpar formulário
-    mostrarFeedback('✓ Inscrição enviada com sucesso! Entraremos em contacto em breve.', 'ok');
-    document.getElementById('campo-nome').value      = '';
-    document.getElementById('campo-telefone').value  = '';
-    document.getElementById('campo-email').value     = '';
-    document.getElementById('campo-senha').value     = '';
-    document.getElementById('campo-curso').value     = '';
-    document.getElementById('campo-pagamento').value = '';
-    document.getElementById('campo-mensagem').value  = '';
-    btn.textContent = 'Inscrição Enviada ✓';
-    setTimeout(() => {
-      mostrarPopupBoasVindas(nome, curso);
-      btn.disabled    = false;
-      btn.textContent = 'Enviar Inscrição';
-    }, 4000);
   }
 
-
-
-  function mostrarFeedback(mensagem, tipo) {
+  function mostrarFeedback(msg, tipo) {
     const el = document.getElementById('form-feedback');
-    el.textContent = mensagem;
+    el.textContent = msg;
     el.style.display = 'block';
-    el.style.background   = tipo === 'ok'  ? 'rgba(44,184,76,0.15)'  : 'rgba(220,50,50,0.15)';
-    el.style.border       = tipo === 'ok'  ? '1px solid rgba(44,184,76,0.4)' : '1px solid rgba(220,50,50,0.4)';
-    el.style.color        = tipo === 'ok'  ? '#2cb84c' : '#f87171';
+    el.style.background = tipo === 'ok' ? 'rgba(44,184,76,0.15)' : 'rgba(220,50,50,0.15)';
+    el.style.border     = tipo === 'ok' ? '1px solid rgba(44,184,76,0.4)' : '1px solid rgba(220,50,50,0.4)';
+    el.style.color      = tipo === 'ok' ? '#2cb84c' : '#f87171';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-</script>
+  function toggleMobileMenu() {
+    const drawer = document.getElementById('mobileDrawer');
+    if (drawer) drawer.classList.toggle('open');
+  }
 
-    
-    <!-- Biblioteca do Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  function alternarVisibilidadeSenha() {
+    const input = document.getElementById('campo-senha');
+    if (input) {
+      input.type = (input.type === 'password') ? 'text' : 'password';
+    }
+  }
 
-<!-- POPUP BOAS-VINDAS -->
-<div id="popup-overlay" style="
-  display:none; position:fixed; inset:0; z-index:999;
-  background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
-  align-items:center; justify-content:center;
-">
-  <div style="
-    background:#1a2e42; border:1px solid rgba(255,255,255,0.1);
-    border-radius:16px; padding:2.5rem; max-width:420px; width:90%;
-    text-align:center; position:relative;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  ">
-    <div style="font-size:3rem; margin-bottom:1rem;">🎓</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:#f5a623;margin-bottom:0.25rem;">Bem-vindo(a)!</div>
-    <div id="popup-nome" style="font-size:1.1rem;font-weight:700;color:#ffffff;margin-bottom:0.5rem;"></div>
-    <div style="color:#8fa8bf;font-size:0.85rem;margin-bottom:1rem;">Inscrição confirmada no curso:</div>
-    <div id="popup-curso" style="background:rgba(30,111,200,0.15);border:1px solid rgba(30,111,200,0.3);color:#7dc0f5;border-radius:6px;padding:0.6rem 1rem;font-weight:600;font-size:0.9rem;margin-bottom:1.5rem;"></div>
-    <div style="background:rgba(44,184,76,0.1);border:1px solid rgba(44,184,76,0.25);border-radius:8px;padding:1rem;color:#8fa8bf;font-size:0.85rem;line-height:1.6;margin-bottom:1.75rem;">
-      Estamos muito felizes por teres escolhido a <strong style="color:#f5a623;">Nurse</strong> para a tua formação.<br>
-      Prepara-te para aprender, crescer e fazer a diferença na saúde de Angola. 💪
-    </div>
-    <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:1.25rem;"></div>
-    <div style="color:#8fa8bf;font-size:0.78rem;margin-bottom:1.5rem;">Entraremos em contacto brevemente para confirmar os detalhes.</div>
-    <div style="display:flex; gap:0.75rem;">
-  <button onclick="fecharPopup()" style="
-    flex:1; background:transparent; color:var(--muted);
-    border:1px solid var(--border); padding:0.75rem;
-    border-radius:6px; font-weight:700; font-size:0.9rem;
-    cursor:pointer; font-family:'Barlow',sans-serif;
-  ">Fechar</button>
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const ativo = item.classList.contains('active');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+    if (!ativo) item.classList.add('active');
+  }
 
-  <a href="login.html" style="
-    flex:1; background:#f5a623; color:#0d1b2a;
-    border:none; padding:0.75rem;
-    border-radius:6px; font-weight:800; font-size:0.9rem;
-    cursor:pointer; font-family:'Barlow',sans-serif;
-    text-decoration:none; text-align:center; display:flex;
-    align-items:center; justify-content:center;
-  ">Aceder à minha área →</a>
-</div>  </div>
-</div>
-
-<script>
   function mostrarPopupBoasVindas(nome, curso) {
-    document.getElementById('popup-nome').textContent = nome;
-    document.getElementById('popup-curso').textContent = curso;
-    document.getElementById('popup-overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    const nomeEl = document.getElementById('popup-nome');
+    const cursoEl = document.getElementById('popup-curso');
+    if (nomeEl) nomeEl.textContent = nome;
+    if (cursoEl) cursoEl.textContent = curso;
+    const overlay = document.getElementById('popup-overlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function fecharPopup() {
-    document.getElementById('popup-overlay').style.display = 'none';
-    document.body.style.overflow = '';
+    const overlay = document.getElementById('popup-overlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }
   }
 
-  document.getElementById('popup-overlay').addEventListener('click', function(e) {
-    if (e.target === this) fecharPopup();
-  });
+  const popupOverlay = document.getElementById('popup-overlay');
+  if (popupOverlay) {
+    popupOverlay.addEventListener('click', function(e) {
+      if (e.target === this) fecharPopup();
+    });
+  }
 
-  initCarousel();
+  if (typeof initCarousel === 'function') {
+    initCarousel();
+  }
 </script>
 
-
 </body>
-  
-
 </html>
