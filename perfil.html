@@ -10,6 +10,121 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="menu.css">
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('nurse-theme') || 'auto';
+        var dark = (t === 'dark') || (t === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('theme-dark');
+      } catch(e) {}
+    })();
+  </script>
+  <style>
+    /* Estilos do carregador de fotografia e formulário */
+    .avatar-upload-wrap {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .avatar-preview-box {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold);
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(13, 27, 42, 0.15);
+      font-size: 2.2rem;
+      font-weight: 800;
+      position: relative;
+    }
+    .avatar-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .avatar-upload-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-file-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--navy);
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      width: fit-content;
+    }
+    .btn-file-trigger:hover {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+      color: var(--navy);
+    }
+    body.theme-dark .btn-file-trigger {
+      background: #13283a;
+      border-color: #244057;
+      color: #f4f7fa;
+    }
+    body.theme-dark .btn-file-trigger:hover {
+      border-color: var(--gold);
+      background: rgba(245, 166, 35, 0.12);
+      color: var(--gold);
+    }
+    .btn-remove-avatar {
+      background: transparent;
+      border: 0;
+      color: #c03b3b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      text-align: left;
+      width: fit-content;
+    }
+    .btn-remove-avatar:hover { text-decoration: underline; }
+    .avatar-upload-hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .profile-footer-bar {
+      margin-top: 24px;
+      padding: 20px 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    body.theme-dark .avatar-upload-wrap,
+    body.theme-dark .profile-footer-bar {
+      background: #13283a;
+      border-color: #244057;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -25,19 +140,23 @@
 
         <div class="desktop-nav">
           <a class="nav-link" href="menu.html">Início</a>
-          <a class="nav-link" href="meu-curso.html">Meu Curso</a>
-          <a class="nav-link" href="index.html#cursos">Catálogo de cursos</a>
-          <a class="nav-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte</a>
+          <a class="nav-link" href="meu-curso.html">Meu Curso <span class="badge" id="navCourseBadge">A carregar…</span></a>
+          <a class="nav-link" href="cursos.html">Catálogo de cursos</a>
+          <a class="nav-link" href="menu.html#comunicados-pedagogicos">Avisos & Apoio</a>
         </div>
 
         <div class="nav-actions">
           <div class="avatar-wrap">
             <button class="avatar-trigger" id="avatarTrigger" type="button" aria-label="Abrir menu da conta" aria-controls="avatarMenu" aria-expanded="false">
-              <span class="profile-avatar" aria-hidden="true">A</span>
-              <span class="profile-label">Perfil</span>
+              <span class="profile-avatar" id="userAvatarInitial" aria-hidden="true">A</span>
+              <span class="profile-label" id="userProfileLabel">Perfil</span>
               <span class="avatar-chevron" aria-hidden="true">⌄</span>
             </button>
             <div class="avatar-menu" id="avatarMenu" role="menu" aria-label="Menu da conta">
+              <div class="avatar-menu-user" id="avatarUserInfo" style="padding: 8px 10px; font-size: 0.8rem; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 4px;">
+                <strong id="avatarUserName" style="display:block; color:var(--navy); font-size:0.88rem;">A carregar…</strong>
+                <span id="avatarUserEmail" style="font-size:0.75rem; word-break:break-all;"></span>
+              </div>
               <a class="avatar-menu-item" href="perfil.html" role="menuitem" aria-current="page">Meu Perfil</a>
               <button class="avatar-menu-item" type="button" data-action="settings" role="menuitem">Configurações</button>
               <div class="avatar-menu-separator"></div>
@@ -81,66 +200,119 @@
       <button class="sheet-close" id="sheetCloseBtn" type="button" aria-label="Fechar menu">×</button>
     </div>
 
-    <p class="mobile-greeting">Portal do aluno</p>
+    <p class="mobile-greeting" id="mobileGreetingName">Portal do Aluno</p>
     <a class="sheet-link" href="menu.html">Início</a>
     <a class="sheet-link" href="meu-curso.html">Meu Curso</a>
     <a class="sheet-link active" href="perfil.html" aria-current="page">Meu Perfil</a>
-    <a class="sheet-link" href="index.html#cursos">Catálogo de cursos</a>
-    <a class="sheet-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte via WhatsApp</a>
+    <a class="sheet-link" href="cursos.html">Catálogo de cursos</a>
+    <a class="sheet-link" href="menu.html#comunicados-pedagogicos">Avisos & Apoio</a>
     <button class="sheet-link sheet-button" type="button" data-action="settings">Configurações</button>
     <button class="sheet-link sheet-logout" id="mobileLogout" type="button">Sair</button>
   </aside>
 
   <main class="page-shell home-wrap">
     <header class="page-intro">
-      <p class="eyebrow">Conta</p>
+      <p class="eyebrow">Conta de Estudante</p>
       <h1>Meu Perfil</h1>
-      <p>Atualiza os teus dados pessoais e mantém a tua conta Nurse protegida.</p>
+      <p>Atualiza os teus dados pessoais, fotografia de perfil e mantém a tua conta Nurse protegida.</p>
     </header>
 
-    <section class="page-grid" aria-label="Dados da conta">
-      <article class="portal-card profile-card">
-        <header class="section-heading">
-          <p class="eyebrow">Dados pessoais</p>
-          <h2>Informação da conta</h2>
-          <p>Estes dados ajudam a identificar-te no portal e nos teus cursos.</p>
-        </header>
+    <!-- FORMULÁRIO COMPLETO COM BOTÃO NO FINAL -->
+    <form id="profile-form">
+      <section class="page-grid" aria-label="Dados da conta">
+        
+        <!-- COLUNA 1: DADOS PESSOAIS & FOTO -->
+        <article class="portal-card profile-card">
+          <header class="section-heading">
+            <p class="eyebrow">Identificação</p>
+            <h2>Dados Pessoais</h2>
+            <p>Estas informações identificam-te nos certificados emitidos e nas listagens das turmas.</p>
+          </header>
 
-        <form class="profile-form" id="profile-form">
-          <p class="feedback" id="profile-email" role="status" aria-live="polite">A carregar a tua conta…</p>
+          <!-- UPLOAD DE FOTO EXCLUSIVAMENTE VIA FICHEIRO OU CÂMARA (SEM URL) -->
+          <div class="avatar-upload-wrap">
+            <div class="avatar-preview-box" id="avatarPreviewContainer">
+              <span id="avatarPreviewInitial">A</span>
+              <img id="avatarPreviewImg" src="" alt="Foto de perfil" style="display:none;">
+            </div>
 
-          <label for="full-name">
-            Nome completo
-            <input id="full-name" type="text" placeholder="O teu nome completo" autocomplete="name">
-          </label>
+            <div class="avatar-upload-actions">
+              <!-- Input escondido que suporta galeria de ficheiros e câmara fotográfica -->
+              <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+              
+              <button type="button" class="btn-file-trigger" onclick="document.getElementById('avatarFileInput').click()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                Carregar foto (Ficheiros ou Câmara)
+              </button>
 
-          <label for="avatar-url">
-            URL da foto de perfil
-            <span class="field-hint">Opcional</span>
-            <input id="avatar-url" type="url" placeholder="https://…" autocomplete="url">
-          </label>
+              <button type="button" class="btn-remove-avatar" id="btnRemoveAvatar" style="display:none;" onclick="removerFotoAvatar()">
+                Remover fotografia
+              </button>
 
-          <button class="button button-primary" type="submit">Guardar alterações</button>
-          <p class="feedback" id="profile-feedback" role="status" aria-live="polite"></p>
-        </form>
-      </article>
+              <span class="avatar-upload-hint">Formatos: JPG, PNG ou WEBP. Escolhe do teu dispositivo ou tira com a câmara.</span>
+            </div>
+          </div>
 
-      <aside class="portal-card profile-security-card">
-        <p class="eyebrow">Segurança</p>
-        <h2>Palavra-passe</h2>
-        <p>Se quiseres alterar a tua palavra-passe, introduz uma nova abaixo. Se deixares o campo vazio, a palavra-passe atual mantém-se.</p>
+          <div class="profile-form">
+            <label for="full-name">
+              Nome Completo do Aluno
+              <input id="full-name" type="text" placeholder="O teu nome completo" autocomplete="name" required>
+            </label>
 
-        <label class="security-field" for="new-password">
-          Nova palavra-passe
-          <span class="field-hint">Mínimo de 6 caracteres</span>
-          <input id="new-password" type="password" minlength="6" placeholder="Introduz uma nova palavra-passe" autocomplete="new-password">
-        </label>
-      </aside>
-    </section>
+            <label for="profile-email-input">
+              Endereço de E-mail
+              <span class="field-hint">Utilizado para autenticação e notificações oficiais</span>
+              <input id="profile-email-input" type="email" readonly disabled style="opacity:0.8; cursor:not-allowed;">
+            </label>
+
+            <label for="profile-phone">
+              Contacto Telefónico / WhatsApp
+              <span class="field-hint">Para contacto da coordenação em Luanda (+244)</span>
+              <input id="profile-phone" type="tel" placeholder="+244 9XX XXX XXX" autocomplete="tel">
+            </label>
+          </div>
+        </article>
+
+        <!-- COLUNA 2: SEGURANÇA E PALAVRA-PASSE -->
+        <aside class="portal-card profile-security-card">
+          <p class="eyebrow">Credenciais de Acesso</p>
+          <h2>Palavra-passe</h2>
+          <p>Se pretendes alterar a tua palavra-passe, define uma nova combinação abaixo. Caso deixes o campo vazio, a palavra-passe atual permanece inalterada.</p>
+
+          <div style="display:grid; gap:16px; margin-top:20px;">
+            <label class="security-field" for="new-password">
+              Nova Palavra-passe
+              <span class="field-hint">Mínimo de 6 caracteres</span>
+              <input id="new-password" type="password" minlength="6" placeholder="Deixa vazio para manter a atual" autocomplete="new-password">
+            </label>
+
+            <label class="security-field" for="confirm-password">
+              Confirmar Nova Palavra-passe
+              <span class="field-hint">Repete a nova combinação</span>
+              <input id="confirm-password" type="password" minlength="6" placeholder="Repete a nova palavra-passe" autocomplete="new-password">
+            </label>
+          </div>
+        </aside>
+
+      </section>
+
+      <!-- BOTÃO GUARDAR ALTERAÇÕES NA PARTE INFERIOR (BOTTOM) -->
+      <footer class="profile-footer-bar">
+        <div>
+          <p class="feedback" id="profile-feedback" role="status" aria-live="polite" style="margin:0; font-weight:600;"></p>
+        </div>
+        <button class="button button-primary" id="btnSaveProfile" type="submit" style="padding:14px 34px; font-size:1rem; font-weight:800; cursor:pointer;">
+          Guardar alterações
+        </button>
+      </footer>
+    </form>
   </main>
 
   <footer class="site-footer">
-    <p>Nurse Formação em Saúde · <a href="menu.html">Voltar ao início</a></p>
+    <p>Nurse Formação em Saúde · Luanda, Angola · <a href="menu.html">Voltar ao início</a></p>
   </footer>
 
   <script src="menu.js" defer></script>

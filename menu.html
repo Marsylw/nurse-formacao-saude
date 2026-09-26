@@ -9,6 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="menu.css">
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('nurse-theme') || 'auto';
+        var dark = (t === 'dark') || (t === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('theme-dark');
+      } catch(e) {}
+    })();
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -20,18 +29,23 @@
         </a>
         <div class="desktop-nav">
           <a class="nav-link active" href="menu.html" aria-current="page">Início</a>
-          <a class="nav-link" href="meu-curso.html">Meu Curso <span class="badge">Área do aluno</span></a>
-          <a class="nav-link" href="index.html#cursos">Catálogo de cursos</a>
-          <a class="nav-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte</a>
+          <a class="nav-link" href="meu-curso.html">Meu Curso <span class="badge" id="navCourseBadge">A carregar…</span></a>
+          <a class="nav-link" href="cursos.html">Catálogo de cursos</a>
+          <a class="nav-link" href="#comunicados-pedagogicos">Avisos & Apoio</a>
         </div>
         <div class="nav-actions">
           <div class="avatar-wrap">
             <button class="avatar-trigger" id="avatarTrigger" type="button" aria-label="Abrir menu da conta" aria-controls="avatarMenu" aria-expanded="false">
-              <span class="profile-avatar" aria-hidden="true">A</span><span class="profile-label">Perfil</span><span class="avatar-chevron" aria-hidden="true">⌄</span>
+              <span class="profile-avatar" id="userAvatarInitial" aria-hidden="true">A</span>
+              <span class="profile-label" id="userProfileLabel">Aluno</span>
+              <span class="avatar-chevron" aria-hidden="true">⌄</span>
             </button>
             <div class="avatar-menu" id="avatarMenu" role="menu" aria-label="Menu da conta">
+              <div class="avatar-menu-user" id="avatarUserInfo" style="padding: 8px 10px; font-size: 0.8rem; color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 4px;">
+                <strong id="avatarUserName" style="display:block; color:var(--navy); font-size:0.88rem;">A autenticar…</strong>
+                <span id="avatarUserEmail" style="font-size:0.75rem; word-break:break-all;"></span>
+              </div>
               <a class="avatar-menu-item" href="perfil.html" role="menuitem">Meu Perfil</a>
-              <button class="avatar-menu-item" type="button" data-action="settings" role="menuitem">Configurações</button>
               <div class="avatar-menu-separator"></div>
               <button class="avatar-menu-item danger" id="avatarLogout" type="button" data-action="logout" role="menuitem">Sair</button>
             </div>
@@ -43,70 +57,108 @@
   </header>
 
   <div class="overlay" id="overlay"></div>
-  <div class="settings-overlay" id="settingsOverlay" hidden>
-    <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-      <button class="settings-close" id="settingsClose" type="button" aria-label="Fechar configurações">×</button>
-      <p class="eyebrow">Preferências</p>
-      <h2 id="settingsTitle">Configurações</h2>
-      <p>Escolhe a aparência do portal. A preferência fica guardada neste dispositivo.</p>
-      <label class="theme-field" for="themeSelect">Tema
-        <select id="themeSelect">
-          <option value="auto">Automático</option>
-          <option value="light">Claro</option>
-          <option value="dark">Escuro</option>
-        </select>
-      </label>
-    </section>
-  </div>
   <aside class="mobile-sheet" id="mobileSheet" aria-label="Menu móvel">
     <div class="sheet-head"><a class="brand" href="menu.html"><img src="Nurselogo.jpg" class="brand-logo" alt="Nurse"><span class="brand-copy"><strong>NURSE</strong><small>FORMAÇÃO EM SAÚDE</small></span></a><button class="sheet-close" id="sheetCloseBtn" type="button" aria-label="Fechar menu">×</button></div>
-    <p class="mobile-greeting">Portal do aluno</p>
+    <p class="mobile-greeting" id="mobileGreetingName">Portal do Aluno</p>
     <a class="sheet-link active" href="menu.html" aria-current="page">Início</a>
     <a class="sheet-link" href="meu-curso.html">Meu Curso</a>
     <a class="sheet-link" href="perfil.html">Meu Perfil</a>
-    <a class="sheet-link" href="index.html#cursos">Catálogo de cursos</a>
-    <a class="sheet-link" href="https://wa.me/244956555380" target="_blank" rel="noopener">Suporte via WhatsApp</a>
-    <button class="sheet-link sheet-button" type="button" data-action="settings">Configurações</button>
+    <a class="sheet-link" href="cursos.html">Catálogo de cursos</a>
+    <a class="sheet-link" href="#comunicados-pedagogicos">Avisos & Apoio</a>
     <button class="sheet-link sheet-logout" id="mobileLogout" type="button">Sair</button>
   </aside>
 
   <main>
     <section class="hero home-wrap">
       <div class="hero-copy">
-        <p class="eyebrow">Portal do aluno · Nurse Formação em Saúde</p>
+        <p class="eyebrow" id="heroStudentGreeting">Portal do aluno · Nurse Formação em Saúde</p>
         <h1>A tua formação continua <em>daqui.</em></h1>
         <p class="hero-lede">Encontra os teus cursos, acompanha o progresso e acede aos materiais de estudo num só lugar.</p>
-        <div class="hero-actions"><a class="button button-primary" href="meu-curso.html">Ir para o meu curso <span>→</span></a><a class="button button-ghost" href="index.html#cursos">Explorar cursos</a></div>
+        <div class="hero-actions"><a class="button button-primary" href="meu-curso.html">Ir para o meu curso <span>→</span></a><a class="button button-ghost" href="cursos.html">Explorar cursos</a></div>
         <div class="hero-note"><span class="status-dot"></span><span>Conteúdos práticos para profissionais de saúde em Angola</span></div>
       </div>
-      <div class="hero-panel" aria-label="Resumo do portal">
+      <div class="hero-panel" id="heroCoursePanel" aria-label="Resumo do portal">
         <div class="panel-glow"></div>
-        <span class="panel-kicker">O teu espaço de aprendizagem</span>
-        <div class="panel-number">01</div>
-        <h2>Aprender. Praticar. Cuidar melhor.</h2>
-        <p>Segue o teu ritmo e volta aos módulos sempre que precisares.</p>
-        <a href="meu-curso.html" class="panel-link">Ver progresso <span>↗</span></a>
+        <span class="panel-kicker" id="panelKicker">O teu curso ativo</span>
+        <div class="panel-number" id="panelStateNumber">--</div>
+        <h2 id="panelCourseTitle">A carregar curso…</h2>
+        <p id="panelCourseDesc">A sincronizar com a tua inscrição...</p>
+        <a href="meu-curso.html" class="panel-link" id="panelLink">Aceder ao curso <span>↗</span></a>
       </div>
     </section>
 
     <section class="feature-grid home-wrap" aria-label="Vantagens do portal">
       <article class="feature-card feature-highlight"><span class="feature-index">01</span><h2>O teu curso num só lugar</h2><p>Consulta a formação em que estás inscrito e continua exatamente onde paraste.</p><a href="meu-curso.html">Abrir Meu Curso <span>→</span></a></article>
       <article class="feature-card"><span class="feature-index">02</span><h2>Materiais para a prática</h2><p>Acede a módulos, vídeos e materiais pensados para a realidade clínica.</p><a href="meu-curso.html#materiais">Ver materiais <span>→</span></a></article>
-      <article class="feature-card"><span class="feature-index">03</span><h2>Novas oportunidades</h2><p>Descobre novas formações e escolhe o próximo passo da tua carreira.</p><a href="index.html#cursos">Ver catálogo <span>→</span></a></article>
+      <article class="feature-card"><span class="feature-index">03</span><h2>Novas oportunidades</h2><p>Descobre novas formações e escolhe o próximo passo da tua carreira.</p><a href="cursos.html">Ver catálogo <span>→</span></a></article>
     </section>
 
-    <section class="faq-section home-wrap" aria-labelledby="faq-title">
-      <div class="section-heading"><p class="eyebrow">Ajuda rápida</p><h2 id="faq-title">Perguntas frequentes</h2><p>Informação essencial sobre as formações Nurse.</p></div>
-      <div class="faq-list">
-        <details class="faq-item" open><summary>O certificado já está incluído no valor do curso?<span>⌄</span></summary><p>Não. O valor do certificado é calculado à parte do curso ou mensalidade e aparece antes da inscrição.</p></details>
-        <details class="faq-item"><summary>Preciso de pagar inscrição?<span>⌄</span></summary><p>Cursos com até 10 dias têm inscrição gratuita. Cursos de 1 mês ou mais têm uma taxa de inscrição de 3.000 Kz.</p></details>
-        <details class="faq-item"><summary>Como posso pagar?<span>⌄</span></summary><p>Aceitamos Multicaixa Express, transferência bancária e cartão.</p></details>
-        <details class="faq-item"><summary>O que recebo além das aulas?<span>⌄</span></summary><p>Todos os cursos incluem material digital de apoio. Os cursos mais longos incluem também prática supervisionada.</p></details>
+    <!-- Secção de Comunicados Pedagógicos e Workshops Práticos (Substitui o FAQ redundante) -->
+    <section class="notices-section home-wrap" id="comunicados-pedagogicos" aria-labelledby="notices-title">
+      <div class="section-heading">
+        <p class="eyebrow">Área Pedagógica</p>
+        <h2 id="notices-title">Comunicados & Sessões Práticas</h2>
+        <p>Avisos da coordenação docente e cronograma de atividades clínicas em Luanda.</p>
       </div>
-      <div class="support-banner"><div><strong>Ainda tens dúvidas?</strong><p>Fala com a equipa Nurse e recebe ajuda.</p></div><a class="button button-dark" href="https://wa.me/244956555380" target="_blank" rel="noopener">Falar com o suporte</a></div>
+
+      <div class="notices-grid">
+        <!-- Caixa 1: Comunicados Oficiais -->
+        <div class="notice-box">
+          <h3>
+            <span>Comunicados Oficiais</span>
+            <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;">Secretaria Académica</span>
+          </h3>
+          <div class="notice-list">
+            <div class="notice-item">
+              <span class="workshop-tag badge-success">Certificação</span>
+              <strong>Emissão de Certificados Digitais com Validação QR Code</strong>
+              <span>Todos os certificados emitidos pela Nurse contam com código de validação digital para apresentação em hospitais e concursos.</span>
+            </div>
+            <div class="notice-item">
+              <span class="workshop-tag badge-info">Protocolos Clínicos</span>
+              <strong>Novos Manuais de Bolso em PDF Disponíveis</strong>
+              <span>Consulte a secção de materiais em "Meu Curso" para descarregar o guia atualizado de Suporte Básico de Vida e ABCDE do Trauma.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caixa 2: Cronograma de Práticas Presenciais -->
+        <div class="notice-box">
+          <h3>
+            <span>Próximas Sessões Práticas</span>
+            <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;">Luanda</span>
+          </h3>
+          <div class="notice-list">
+            <div class="notice-item">
+              <span class="workshop-tag badge-warning">Simulação Realística</span>
+              <strong>Laboratório Prático de SBV / SAV + DEA</strong>
+              <span>Sábados, das 09h00 às 13h00 · Treino de compressões torácicas e operação com desfibrilhador na unidade central.</span>
+            </div>
+            <div class="notice-item">
+              <span class="workshop-tag badge-info">Cuidados Críticos</span>
+              <strong>Treino de Via Aérea & Ventilação Mecânica</strong>
+              <span>Workshops supervisionados de intubação orotraqueal e monitorização de alarmes ventilatórios em UTI.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Apoio ao Aluno Centralizado -->
+      <div class="support-banner" style="margin-top:32px;">
+        <div>
+          <strong>Secretaria & Apoio ao Estudante</strong>
+          <p>Tens dúvidas sobre declarações de matrícula, turmas ou horários das aulas práticas?</p>
+        </div>
+        <a class="button button-dark" href="https://wa.me/244956555380" target="_blank" rel="noopener">
+          Contactar Secretaria
+        </a>
+      </div>
     </section>
   </main>
-  <footer class="site-footer"><p>Nurse Formação em Saúde · <a href="https://wa.me/244956555380" target="_blank" rel="noopener">Falar com o suporte</a></p></footer>
+
+  <footer class="site-footer">
+    <p>Nurse Formação em Saúde · Luanda, Angola · Todos os direitos reservados</p>
+  </footer>
   <script src="menu.js" defer></script>
 </body>
 </html>
