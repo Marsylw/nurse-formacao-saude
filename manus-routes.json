@@ -1,0 +1,11 @@
+{
+  "routes": [
+    { "path": "/", "title": "Nurse — Formação em Saúde" },
+    { "path": "/login.html", "title": "Área do Aluno — Login" },
+    { "path": "/menu.html", "title": "Portal do Aluno — Início" },
+    { "path": "/meu-curso.html", "title": "Meu Curso" },
+    { "path": "/cursos.html", "title": "Catálogo de Cursos" },
+    { "path": "/perfil.html", "title": "Meu Perfil" },
+    { "path": "/admin.html", "title": "Administração" }
+  ]
+}

@@ -203,6 +203,34 @@ body.theme-dark .security-field input{border-color:#2e4c66;background:#0d1b2a;co
 body.theme-dark .settings-close{color:#a3b8cb}
 body.theme-dark .settings-close:hover{background:#1b354c;color:#ffffff}
 
+/* Materiais por módulo e progresso de conclusão — integração Stage 6/7. */
+.admin-only-link[hidden]{display:none!important}
+.course-library .material-grid{grid-template-columns:minmax(0,1fr)}
+.profile-avatar-image{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.material-module-group{display:grid;gap:14px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.material-module-group+.material-module-group{margin-top:18px}
+.material-module-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.material-module-heading{margin:0;color:var(--navy);font:700 1.25rem/1.2 'Barlow Condensed',sans-serif}
+.material-module-details{display:grid;gap:10px;color:var(--muted)}
+.material-module-details p{margin:0}
+.material-module-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}
+.material-module-group .material-item{display:grid;align-content:start;gap:10px;min-width:0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.material-module-group .material-item strong{margin:0;color:var(--navy)}
+.material-module-group .material-item>span{color:var(--muted);font-size:.86rem}
+.material-open-link{color:#9a6209;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.material-player{display:block;width:100%;max-height:420px;border-radius:10px;background:#101820}
+.material-image-preview{display:block;width:100%;max-height:320px;object-fit:contain;border-radius:10px;background:#eef2f5}
+.module-completion-toggle{flex-shrink:0;white-space:nowrap}
+.module-progress-feedback{min-height:1.25em;margin:0;color:var(--muted);font-size:.85rem}
+.material-module-group .course-empty{margin:0;padding:12px;border-radius:10px;background:var(--surface);color:var(--muted)}
+@media(max-width:640px){.material-module-group{padding:16px}.material-module-header{align-items:flex-start;flex-direction:column}.module-completion-toggle{white-space:normal}}
+
+body.theme-dark .material-module-group{background:#13283a;border-color:#244057}
+body.theme-dark .material-module-group .material-item strong{color:#f4f7fa}
+body.theme-dark .material-module-group .material-item>span{color:#a3b8cb}
+body.theme-dark .material-module-group .course-empty{background:#102438;color:#a3b8cb}
+body.theme-dark .material-open-link{color:var(--gold)}
+
 body.theme-dark .material-item,
 body.theme-dark .next-module-box{background:#102438;border-color:#244057}
 body.theme-dark .material-item strong,

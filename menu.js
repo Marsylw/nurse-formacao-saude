@@ -20,6 +20,13 @@
   var settingsClose = document.getElementById('settingsClose');
   var themeSelect = document.getElementById('themeSelect');
 
+  function configurarAcessoAdmin(user) {
+    var isAdmin = Boolean(user && user.app_metadata && user.app_metadata.role === 'admin');
+    document.querySelectorAll('[data-admin-only]').forEach(function (element) {
+      element.hidden = !isAdmin;
+    });
+  }
+
   function closeAvatarMenu() {
     if (!avatarMenu || !avatarTrigger) return;
     avatarMenu.classList.remove('open');
@@ -153,6 +160,8 @@
         return;
       }
 
+      configurarAcessoAdmin(user);
+
       // 1. Obter nome e dados do aluno
       var metadata = user.user_metadata || {};
       var fullName = metadata.full_name || metadata.name || '';
@@ -173,12 +182,29 @@
       var displayName = fullName || (user.email ? user.email.split('@')[0] : 'Aluno');
       var primeirNome = displayName.trim().split(' ')[0];
       var inicial = primeirNome.charAt(0).toUpperCase() || 'A';
+      var safeAvatarUrl = '';
+      if (avatarUrl) {
+        try {
+          var parsedAvatarUrl = new URL(avatarUrl, window.location.href);
+          if (parsedAvatarUrl.protocol === 'https:' || parsedAvatarUrl.origin === window.location.origin) {
+            safeAvatarUrl = parsedAvatarUrl.href;
+          }
+        } catch (err) {
+          // Ignora URLs de avatar inválidos e mantém a inicial como alternativa.
+        }
+      }
 
       // Atualizar Avatar e Nomes no Topo e Menu Móvel
       var avatarInitialEl = document.getElementById('userAvatarInitial');
       if (avatarInitialEl) {
-        if (avatarUrl) {
-          avatarInitialEl.innerHTML = '<img src="' + avatarUrl + '" alt="' + displayName + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">';
+        if (safeAvatarUrl) {
+          var avatarImage = document.createElement('img');
+          avatarImage.className = 'profile-avatar-image';
+          avatarImage.src = safeAvatarUrl;
+          avatarImage.alt = displayName;
+          avatarImage.loading = 'lazy';
+          avatarImage.referrerPolicy = 'no-referrer';
+          avatarInitialEl.replaceChildren(avatarImage);
         } else {
           avatarInitialEl.textContent = inicial;
         }
