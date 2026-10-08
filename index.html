@@ -1744,19 +1744,22 @@
         return;
       }
 
-      const userId = authData && authData.user ? authData.user.id : null;
+      const userId = authData && authData.session && authData.session.user
+        ? authData.session.user.id
+        : null;
 
-      // 2) Gravar registo
-      const { error: dbError } = await db.from('inscricoes').insert({
+      // 2) Gravar apenas o pedido; a palavra-passe fica exclusivamente no Supabase Auth.
+      const pedidoInscricao = {
         nome,
         telefone,
         email,
         curso,
         pagamento,
-        mensagem: mensagem || null,
-        estado: 'pendente',
-        user_id: userId
-      });
+        mensagem: mensagem || null
+      };
+      // O estado pendente vem do default da base de dados; só associar uma sessão autenticada.
+      if (userId) pedidoInscricao.user_id = userId;
+      const { error: dbError } = await db.from('inscricoes').insert(pedidoInscricao);
 
       if (dbError) {
         console.error('Supabase erro:', dbError);
@@ -1767,7 +1770,7 @@
       }
 
       // Sucesso
-      mostrarFeedback('Inscrição confirmada com sucesso! Os seus dados foram registados.', 'ok');
+      mostrarFeedback('Inscrição enviada com sucesso! O pedido aguarda validação da equipa.', 'ok');
       document.getElementById('campo-nome').value = '';
       document.getElementById('campo-telefone').value = '';
       document.getElementById('campo-email').value = '';
