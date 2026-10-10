@@ -57,7 +57,21 @@
     const target = $('other-enrollments');
     if (!target) return;
     target.replaceChildren();
-    const others = entries.filter((entry) => entry !== current);
+    const uniqueEntries = [];
+    entries.forEach((entry) => {
+      const entryName = (entry.cursos && entry.cursos.nome ? entry.cursos.nome : (entry.curso || '')).trim().toLocaleLowerCase();
+      const duplicateIndex = uniqueEntries.findIndex((existing) => {
+        if (entry.curso_id && existing.curso_id) return String(entry.curso_id) === String(existing.curso_id);
+        const existingName = (existing.cursos && existing.cursos.nome ? existing.cursos.nome : (existing.curso || '')).trim().toLocaleLowerCase();
+        return entryName && entryName === existingName;
+      });
+      if (duplicateIndex === -1) {
+        uniqueEntries.push(entry);
+      } else if (entry.estado === 'confirmado' && uniqueEntries[duplicateIndex].estado !== 'confirmado') {
+        uniqueEntries[duplicateIndex] = entry;
+      }
+    });
+    const others = uniqueEntries.filter((entry) => entry !== current);
     if (!others.length) return;
 
     const label = document.createElement('p');

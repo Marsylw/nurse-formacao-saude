@@ -1048,8 +1048,38 @@
         const nome = meta.full_name || meta.name || user.email.split('@')[0];
         const tel  = meta.telefone || '';
 
+        const { data: existingEnrollment, error: existingEnrollmentError } = await client
+          .from('inscricoes')
+          .select('id,estado')
+          .eq('user_id', user.id)
+          .eq('curso', cursoSelecionadoParaInscricao)
+          .in('estado', ['pendente', 'confirmado'])
+          .order('created_at', { ascending: false });
+
+        if (existingEnrollmentError) throw existingEnrollmentError;
+        const existingCourseEnrollment = (existingEnrollment || []).find((entry) => entry.estado === 'confirmado')
+          || (existingEnrollment || [])[0];
+        if (existingCourseEnrollment) {
+          feedback.className = 'feedback error';
+          feedback.textContent = existingCourseEnrollment.estado === 'confirmado'
+            ? 'Já tens uma inscrição confirmada neste curso. Acede à área Meu Curso.'
+            : 'Já existe um pedido de inscrição pendente para este curso.';
+          btn.disabled = false;
+          btn.textContent = 'Confirmar Pedido';
+          return;
+        }
+
+        const { data: courseRecord, error: courseLookupError } = await client
+          .from('cursos')
+          .select('id')
+          .eq('nome', cursoSelecionadoParaInscricao)
+          .maybeSingle();
+
+        if (courseLookupError) throw courseLookupError;
+
         const { error } = await client.from('inscricoes').insert({
           user_id: user.id,
+          curso_id: courseRecord ? courseRecord.id : null,
           nome: nome,
           telefone: tel,
           email: user.email,
