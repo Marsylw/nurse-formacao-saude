@@ -959,15 +959,18 @@
       if (cartoesMontados) return;
       const target = document.getElementById('dynamicCardsContainer');
       const rows = document.querySelectorAll('#portalTableBody tr');
-      target.innerHTML = '';
+      target.replaceChildren();
 
       rows.forEach(r => {
-        const title = r.querySelector('.c-title').innerText;
-        const desc  = r.querySelector('.c-desc').innerText;
-        const area  = r.querySelector('.c-area').innerText;
-        const durBadge = r.querySelector('.dur-badge').outerHTML;
-        const price = r.querySelector('.c-price-val').innerText;
-        const cert  = r.querySelector('.c-price-cert').innerText;
+        const title = r.querySelector('.c-title').textContent;
+        const desc  = r.querySelector('.c-desc').textContent;
+        const areaNode = r.querySelector('.c-area');
+        const area  = areaNode ? areaNode.textContent : r.querySelector('td:nth-child(2)').textContent;
+        const durBadge = r.querySelector('.dur-badge').cloneNode(true);
+        const priceNode = r.querySelector('.c-price-val');
+        const price = priceNode ? priceNode.textContent : 'A consultar';
+        const certNode = r.querySelector('.c-price-cert');
+        const cert  = certNode ? certNode.textContent : '';
         const cat   = r.getAttribute('data-cat');
         const search = r.getAttribute('data-search');
 
@@ -975,30 +978,50 @@
         card.className = 'c-card';
         card.setAttribute('data-cat', cat);
         card.setAttribute('data-search', search);
+        const body = document.createElement('div');
+        const top = document.createElement('div');
+        top.className = 'c-card-top';
+        const areaLabel = document.createElement('span');
+        areaLabel.className = 'c-area';
+        areaLabel.textContent = area;
+        top.append(areaLabel, durBadge);
+        const heading = document.createElement('h3');
+        heading.className = 'c-title';
+        heading.textContent = title;
+        const description = document.createElement('p');
+        description.className = 'c-desc';
+        description.textContent = desc;
+        body.append(top, heading, description);
 
-        card.innerHTML = `
-          <div>
-            <div class="c-card-top">
-              <span class="c-area">${area}</span>
-              ${durBadge}
-            </div>
-            <h3 class="c-title">${title}</h3>
-            <p class="c-desc">${desc}</p>
-          </div>
-          <div class="c-card-bottom">
-            <div class="c-price-box">
-              <div class="c-price-val">${price}</div>
-              <div class="c-price-cert">${cert}</div>
-            </div>
-            <button class="btn-enroll-action" onclick="abrirModalInscricao('${title.replace("'", "\\'")}', '${price}', '${durBadge.replace(/<[^>]*>/g, '')}')">Solicitar Vaga</button>
-          </div>
-        `;
+        const footer = document.createElement('div');
+        footer.className = 'c-card-bottom';
+        const priceBox = document.createElement('div');
+        priceBox.className = 'c-price-box';
+        const priceLabel = document.createElement('div');
+        priceLabel.className = 'c-price-val';
+        priceLabel.textContent = price;
+        const certificate = document.createElement('div');
+        certificate.className = 'c-price-cert';
+        certificate.textContent = cert;
+        priceBox.append(priceLabel, certificate);
+        const button = document.createElement('button');
+        button.className = 'btn-enroll-action';
+        button.type = 'button';
+        button.textContent = 'Solicitar Vaga';
+        button.addEventListener('click', function () { abrirModalInscricao(title, price, durBadge.textContent); });
+        footer.append(priceBox, button);
+        card.append(body, footer);
         target.appendChild(card);
       });
 
       cartoesMontados = true;
       filtrarCursosPortal();
     }
+    window.refreshCatalogCourseCards = function () {
+      if (!cartoesMontados) return;
+      cartoesMontados = false;
+      construirCartoesSeNecessario();
+    };
 
     // Modal de Inscrição Direta
     let cursoSelecionadoParaInscricao = '';
@@ -1118,5 +1141,6 @@
       }
     }
   </script>
+  <script src="course-catalog-sync.js"></script>
 </body>
 </html>

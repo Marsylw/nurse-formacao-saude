@@ -1624,15 +1624,16 @@
     if (!target) return;
 
     const rows = document.querySelectorAll('#coursesTableBody tr');
-    target.innerHTML = '';
+    target.replaceChildren();
 
     rows.forEach(row => {
       const title = row.querySelector('.table-course-title').innerText;
       const sub = row.querySelector('.table-course-sub').innerText;
       const area = row.querySelector('td:nth-child(2)').innerText;
       const dur = row.querySelector('.table-badge').innerText;
-      const preco = row.querySelector('.table-price-main').innerHTML;
-      const cert = row.querySelector('.table-price-cert').innerText;
+      const preco = row.querySelector('.table-price-main').textContent;
+      const certNode = row.querySelector('.table-price-cert');
+      const cert = certNode ? certNode.textContent : '';
       const cat = row.getAttribute('data-category');
       const search = row.getAttribute('data-search');
 
@@ -1641,43 +1642,67 @@
       card.setAttribute('data-category', cat);
       card.setAttribute('data-search', search);
 
-      card.innerHTML = `
-        <div>
-          <div class="exec-card-header">
-            <span class="exec-category">${area}</span>
-            <span class="table-badge badge-dur-mid">${dur}</span>
-          </div>
-          <h3 class="exec-title">${title}</h3>
-          <p style="font-size:0.82rem; color:var(--muted); line-height:1.45; margin-bottom:1rem;">${sub}</p>
-        </div>
-        <div class="exec-card-footer">
-          <div>
-            <div class="table-price-main">${preco}</div>
-            <div class="table-price-cert">${cert}</div>
-          </div>
-          <button class="btn-table-action" onclick="inscreverCursoDireto('${title.replace("'", "\\'")}')">Inscrever</button>
-        </div>
-      `;
+      const body = document.createElement('div');
+      const header = document.createElement('div');
+      header.className = 'exec-card-header';
+      const category = document.createElement('span');
+      category.className = 'exec-category';
+      category.textContent = area;
+      const duration = row.querySelector('.table-badge').cloneNode(true);
+      header.append(category, duration);
+      const heading = document.createElement('h3');
+      heading.className = 'exec-title';
+      heading.textContent = title;
+      const description = document.createElement('p');
+      description.style.cssText = 'font-size:0.82rem;color:var(--muted);line-height:1.45;margin-bottom:1rem;';
+      description.textContent = sub;
+      body.append(header, heading, description);
+
+      const footer = document.createElement('div');
+      footer.className = 'exec-card-footer';
+      const prices = document.createElement('div');
+      const price = document.createElement('div');
+      price.className = 'table-price-main';
+      price.textContent = preco;
+      const certificate = document.createElement('div');
+      certificate.className = 'table-price-cert';
+      certificate.textContent = cert;
+      prices.append(price, certificate);
+      const button = document.createElement('button');
+      button.className = 'btn-table-action';
+      button.type = 'button';
+      button.textContent = 'Inscrever';
+      button.addEventListener('click', function () { inscreverCursoDireto(title); });
+      footer.append(prices, button);
+      card.append(body, footer);
       target.appendChild(card);
     });
 
     cartoesGerados = true;
     filtrarCatalogo();
   }
+  window.refreshHomepageCourseCards = function () {
+    if (!cartoesGerados) return;
+    cartoesGerados = false;
+    gerarCartoesExecutivosSeNecessario();
+  };
 
   // Inscrição Direta vinda da tabela ou cartões
   function inscreverCursoDireto(nomeCurso) {
     const select = document.getElementById('campo-curso');
     if (select) {
-      for (let i = 0; i < select.options.length; i++) {
-        const val = select.options[i].value.toLowerCase();
-        const txt = select.options[i].text.toLowerCase();
-        const procurado = nomeCurso.toLowerCase();
-        if (val.includes(procurado) || txt.includes(procurado) || procurado.includes(val)) {
-          select.selectedIndex = i;
-          break;
-        }
+      const procurado = nomeCurso.trim().toLocaleLowerCase();
+      let correspondencia = Array.from(select.options).find(option =>
+        option.value && (option.value.trim().toLocaleLowerCase() === procurado || option.text.trim().toLocaleLowerCase() === procurado)
+      );
+      if (!correspondencia) {
+        correspondencia = Array.from(select.options).find(option => {
+          const valor = option.value.trim().toLocaleLowerCase();
+          const texto = option.text.trim().toLocaleLowerCase();
+          return valor && (procurado.includes(valor) || texto.includes(procurado));
+        });
       }
+      if (correspondencia) select.value = correspondencia.value;
     }
 
     const sec = document.getElementById('contacto');
@@ -1708,6 +1733,7 @@
     const curso     = document.getElementById('campo-curso').value;
     const pagamento = document.getElementById('campo-pagamento').value;
     const mensagem  = document.getElementById('campo-mensagem').value.trim();
+    const cursoOption = document.getElementById('campo-curso').selectedOptions[0];
 
     if (!nome || !telefone || !email || !curso || !senha || !pagamento) {
       mostrarFeedback('Por favor preencha todos os campos obrigatórios (*).', 'erro');
@@ -1757,6 +1783,7 @@
         pagamento,
         mensagem: mensagem || null
       };
+      if (cursoOption && cursoOption.dataset.courseId) pedidoInscricao.curso_id = cursoOption.dataset.courseId;
       // O estado pendente vem do default da base de dados; só associar uma sessão autenticada.
       if (userId) pedidoInscricao.user_id = userId;
       const { error: dbError } = await db.from('inscricoes').insert(pedidoInscricao);
@@ -1854,6 +1881,7 @@
     initCarousel();
   }
 </script>
+<script src="course-catalog-sync.js"></script>
 
 </body>
 </html>
