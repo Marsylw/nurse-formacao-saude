@@ -97,64 +97,37 @@
     <header class="page-intro">
       <p class="eyebrow">Área do aluno</p>
       <h1>Meu Curso</h1>
+      <h2 class="course-page-title" id="course-title">A carregar o teu curso…</h2>
+      <p id="course-description">Estamos a verificar as tuas inscrições.</p>
       <p>Acompanha a tua formação, consulta os materiais disponíveis e continua o teu percurso.</p>
     </header>
 
-    <section class="page-grid" aria-label="Resumo do curso">
-      <article class="portal-card" aria-labelledby="course-title">
-        <div class="course-status" id="course-status">A carregar</div>
-        <h2 id="course-title">A carregar o teu curso…</h2>
-        <p id="course-description">Estamos a verificar as tuas inscrições.</p>
-        <p class="feedback" id="course-feedback" role="status" aria-live="polite"></p>
-
-        <div class="course-meta">
-          <span>Progresso geral</span>
-          <strong id="progress-percent">0%</strong>
-        </div>
-        <div class="progress-track" aria-hidden="true">
-          <span id="progress-bar"></span>
-        </div>
-        <p id="progress-summary">A carregar módulos…</p>
-
-        <div class="course-actions">
-          <a class="button button-primary" href="#materiais">Ver materiais <span>↓</span></a>
-          <a class="button button-ghost" href="cursos.html">Ver catálogo de cursos</a>
-        </div>
-
-        <div id="other-enrollments" aria-live="polite"></div>
-      </article>
-
-      <aside class="portal-card" aria-labelledby="next-step-title">
-        <p class="eyebrow">Próximo passo</p>
-        <h2 id="next-step-title">Continua a tua formação</h2>
-        <p id="next-state">Vamos preparar o teu próximo passo.</p>
-        <div class="next-module-box">
-          <span>Próximo módulo</span>
-          <strong id="next-module">A carregar…</strong>
-        </div>
-        <a class="button button-dark" href="#materiais">Abrir biblioteca</a>
+    <section class="player-progress-card portal-card" aria-label="Progresso do curso">
+      <div class="player-progress-copy"><div class="course-status" id="course-status">A carregar</div><p>Continua a tua aprendizagem pelo programa do curso.</p></div>
+      <div class="player-progress-meter"><div class="course-meta"><span>Progresso geral</span><strong id="progress-percent">0%</strong></div><div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div><p id="progress-summary">A carregar módulos…</p></div>
+    </section>
+    <p class="feedback player-feedback" id="course-feedback" role="status" aria-live="polite"></p>
+    <section class="learning-shell" aria-label="Leitor do curso">
+      <aside class="learning-outline portal-card" aria-labelledby="outline-title">
+        <div class="outline-heading"><div><p class="eyebrow">Conteúdo do curso</p><h2 id="outline-title">Programa</h2></div><span id="outline-count" class="outline-count"></span></div>
+        <nav id="learning-outline" class="learning-outline-list" aria-label="Módulos, aulas e avaliações"><p class="course-empty">A carregar o programa…</p></nav>
       </aside>
+      <article class="lesson-panel portal-card" aria-labelledby="lesson-title">
+        <div class="lesson-kicker" id="lesson-kicker">Aula</div>
+        <h2 id="lesson-title">A carregar conteúdo…</h2>
+        <p id="lesson-summary" class="lesson-summary"></p>
+        <div id="lesson-player" class="lesson-player" aria-live="polite"><p class="course-empty">A preparar o leitor…</p></div>
+        <div id="lesson-content" class="lesson-content"></div>
+        <div id="lesson-materials" class="lesson-materials"></div>
+        <section id="assessment-panel" class="assessment-panel" hidden aria-labelledby="assessment-title">
+          <h3 id="assessment-title">Avaliação</h3><p id="assessment-description"></p>
+          <form id="assessment-form"><div id="assessment-questions"></div><button id="assessment-submit" class="button button-primary" type="submit">Submeter respostas</button></form>
+          <p id="assessment-result" class="assessment-result" role="status" aria-live="polite"></p>
+        </section>
+        <div class="lesson-navigation"><button id="lesson-previous" class="button button-ghost" type="button">← Anterior</button><button id="module-complete" class="button button-quiet" type="button" hidden>Marcar módulo como concluído</button><button id="lesson-next" class="button button-primary" type="button">Seguinte →</button></div>
+      </article>
     </section>
-
-    <section class="portal-card course-library" id="materiais" aria-labelledby="materials-title">
-      <header class="section-heading">
-        <p class="eyebrow">Biblioteca do curso</p>
-        <h2 id="materials-title">Materiais recentes</h2>
-        <p>Os conteúdos publicados para a tua formação aparecem nesta área.</p>
-      </header>
-      <div class="material-grid" id="materials-list">
-        <div class="course-empty">A carregar materiais…</div>
-      </div>
-    </section>
-
-    <section class="portal-card catalog-callout" aria-labelledby="catalog-title">
-      <div>
-        <p class="eyebrow">Próxima formação</p>
-        <h2 id="catalog-title">Queres fazer outro curso?</h2>
-        <p>Consulta a listagem completa de formações Nurse no catálogo principal.</p>
-      </div>
-      <a class="button button-primary" href="cursos.html">Ver todos os cursos <span>→</span></a>
-    </section>
+    <section class="portal-card catalog-callout" aria-labelledby="catalog-title"><div><p class="eyebrow">Próxima formação</p><h2 id="catalog-title">Queres fazer outro curso?</h2><p>Consulta a listagem completa de formações Nurse no catálogo principal.</p></div><a class="button button-primary" href="cursos.html">Ver todos os cursos <span>→</span></a></section>
   </main>
 
   <footer class="site-footer">

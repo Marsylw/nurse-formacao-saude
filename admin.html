@@ -17,6 +17,7 @@
       <span>NURSE <small>Administração</small></span>
     </a>
     <nav class="admin-top-actions" aria-label="Navegação da administração">
+      <a href="admin-learning.html">Conteúdos e avaliações</a>
       <a href="menu.html">Portal do aluno</a>
       <a href="index.html">Site público</a>
       <span id="admin-identity" class="admin-identity" hidden></span>
@@ -55,6 +56,7 @@
         <a href="#cursos">Cursos</a>
         <a href="#modulos">Módulos</a>
         <a href="#materiais">Materiais</a>
+        <a href="admin-learning.html">Tópicos e avaliações</a>
       </nav>
 
       <section id="cursos" class="admin-section" aria-labelledby="courses-heading">
@@ -166,6 +168,12 @@
               <select id="material-module" name="modulo_id" required disabled>
                 <option value="">Seleciona primeiro um curso</option>
               </select>
+            </label>
+            <label class="field field-wide">Tópico/aula (opcional)
+              <select id="material-topic" name="topico_id" disabled>
+                <option value="">Material do módulo, sem tópico específico</option>
+              </select>
+              <span class="helper-text">Para um vídeo aparecer dentro de uma aula na nova estrutura do curso, associa-o ao tópico correspondente.</span>
             </label>
             <label class="field field-wide">Título
               <input id="material-title" name="titulo" type="text" maxlength="180" required>

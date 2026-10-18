@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Nurse — Conteúdos e avaliações</title>
+  <link rel="icon" href="Nurselogo.jpg">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="admin-learning.js" defer></script>
+</head>
+<body>
+  <header class="admin-topbar">
+    <a class="admin-brand" href="admin.html" aria-label="Nurse — administração">
+      <img src="Nurselogo.jpg" alt=""><span>NURSE <small>Conteúdos</small></span>
+    </a>
+    <nav class="admin-top-actions" aria-label="Navegação da administração">
+      <a href="admin.html">Gestão geral</a><a href="menu.html">Portal do aluno</a>
+      <span id="admin-identity" class="admin-identity" hidden></span>
+      <button id="admin-logout" class="button button-quiet" type="button" hidden>Terminar sessão</button>
+    </nav>
+  </header>
+  <main class="admin-shell">
+    <header class="page-intro">
+      <p class="eyebrow">Estrutura pedagógica</p>
+      <h1>Conteúdos e avaliações</h1>
+      <p>Organiza cada curso por módulos e tópicos. Os alunos veem o vídeo ou conteúdo no leitor do curso e podem avançar para as avaliações.</p>
+    </header>
+    <div id="auth-status" class="status-panel" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span>A verificar a sessão e as permissões…</div>
+    <section id="access-denied" class="access-panel" hidden aria-labelledby="access-title">
+      <div class="access-icon" aria-hidden="true">!</div><div><p class="eyebrow">Acesso protegido</p><h2 id="access-title">Não tens permissões de administrador</h2><p id="access-message">Inicia sessão com uma conta autorizada. A autorização é confirmada no Supabase.</p><div class="access-actions"><a class="button button-primary" href="login.html">Iniciar sessão</a><a class="text-link" href="admin.html">Voltar à administração</a></div></div>
+    </section>
+    <div id="admin-app" hidden>
+      <div id="admin-notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <nav class="section-jump" aria-label="Secções de gestão"><a href="#topicos">Tópicos</a><a href="#avaliacoes">Avaliações</a></nav>
+      <section id="topicos" class="admin-section" aria-labelledby="topics-heading">
+        <div class="section-heading"><div><p class="eyebrow">Curso → Módulo → Tópico</p><h2 id="topics-heading">Tópicos e aulas</h2></div><p>Cria uma aula com texto e associa vídeos ou outros materiais na página de administração de materiais.</p></div>
+        <div class="admin-grid">
+          <form id="topic-form" class="admin-card form-card">
+            <h3>Novo tópico</h3>
+            <label class="field field-wide">Curso<select id="topic-course" required></select></label>
+            <label class="field field-wide">Módulo<select id="topic-module" required></select></label>
+            <label class="field field-wide">Título da aula<input id="topic-title" type="text" maxlength="180" required></label>
+            <label class="field field-wide">Resumo<textarea id="topic-summary" rows="2" maxlength="500"></textarea></label>
+            <label class="field field-wide">Conteúdo da aula<textarea id="topic-content" rows="7" maxlength="20000" placeholder="Escreve o conteúdo de texto da aula. Podes associar um vídeo no formulário Materiais da página Gestão geral."></textarea></label>
+            <div class="field-grid"><label class="field">Ordem<input id="topic-order" type="number" min="0" step="1" value="10" required></label><label class="field">Publicação<select id="topic-published"><option value="false">Rascunho</option><option value="true">Publicado</option></select></label></div>
+            <button class="button button-primary" type="submit">Criar tópico</button>
+          </form>
+          <section class="admin-card list-card" aria-labelledby="topic-list-heading">
+            <div class="card-heading-row"><div><p class="eyebrow">Conteúdo do curso</p><h3 id="topic-list-heading">Tópicos existentes</h3></div><button id="reload-topics" class="button button-quiet" type="button">Atualizar</button></div>
+            <label class="field field-wide">Curso<select id="topic-list-course" required></select></label>
+            <div id="topic-list" class="item-list" aria-live="polite"><p class="empty-state">Seleciona um curso.</p></div>
+          </section>
+        </div>
+      </section>
+      <section id="avaliacoes" class="admin-section" aria-labelledby="assessment-heading">
+        <div class="section-heading"><div><p class="eyebrow">Curso → Módulo → Avaliação</p><h2 id="assessment-heading">Avaliações</h2></div><p>Cria questionários de escolha única. A chave de resposta fica no servidor; o aluno recebe apenas as opções e a nota depois de submeter.</p></div>
+        <div class="admin-grid">
+          <form id="assessment-form" class="admin-card form-card">
+            <h3>Nova avaliação</h3>
+            <label class="field field-wide">Curso<select id="assessment-course" required></select></label>
+            <label class="field field-wide">Módulo<select id="assessment-module"><option value="">Avaliação final do curso</option></select></label>
+            <label class="field field-wide">Título<input id="assessment-title" type="text" maxlength="180" required></label>
+            <label class="field field-wide">Instruções<textarea id="assessment-description" rows="2" maxlength="2000"></textarea></label>
+            <label class="field">Percentagem mínima para aprovação<input id="assessment-pass-score" type="number" min="1" max="100" value="80" required></label>
+            <div class="question-builder-heading"><h4>Perguntas</h4><button id="add-question" class="button button-quiet" type="button">Adicionar pergunta</button></div>
+            <div id="question-list"></div>
+            <button id="assessment-submit" class="button button-primary" type="submit">Criar avaliação</button>
+          </form>
+          <section class="admin-card list-card" aria-labelledby="assessment-list-heading">
+            <div class="card-heading-row"><div><p class="eyebrow">Avaliações registadas</p><h3 id="assessment-list-heading">Avaliações do curso</h3></div><button id="reload-assessments" class="button button-quiet" type="button">Atualizar</button></div>
+            <label class="field field-wide">Curso<select id="assessment-list-course" required></select></label>
+            <div id="assessment-list" class="item-list" aria-live="polite"><p class="empty-state">Seleciona um curso.</p></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="admin-footer">Nurse Formação em Saúde · Conteúdos privados para alunos com inscrição confirmada.</footer>
+</body>
+</html>

@@ -12,6 +12,7 @@
   var state = {
     courses: [],
     modulesByCourse: new Map(),
+    topicsByCourse: new Map(),
     selectedModuleCourseId: '',
     selectedMaterialCourseId: ''
   };
@@ -133,6 +134,7 @@
     else displayEmpty($('#module-list'), 'Cria primeiro um curso para adicionares módulos.');
     if (state.selectedMaterialCourseId) {
       await loadModules(state.selectedMaterialCourseId);
+      await loadTopics(state.selectedMaterialCourseId);
       await loadMaterials(state.selectedMaterialCourseId);
     } else {
       populateModuleSelect($('#material-module'), '', 'Seleciona primeiro um curso');
@@ -176,6 +178,30 @@
     select.disabled = !modules.length;
   }
 
+  function populateTopicSelect(courseId, moduleId) {
+    var select = $('#material-topic');
+    if (!select) return;
+    select.replaceChildren();
+    addOption(select, '', 'Material do módulo, sem tópico específico');
+    (state.topicsByCourse.get(String(courseId)) || [])
+      .filter(function (topic) { return String(topic.modulo_id) === String(moduleId); })
+      .forEach(function (topic) { addOption(select, topic.id, topic.ordem + ' · ' + topic.titulo + (topic.publicado ? '' : ' (rascunho)')); });
+    select.disabled = !moduleId;
+  }
+
+  async function loadTopics(courseId) {
+    if (!courseId) return [];
+    var result = await db.from('topicos').select('id,curso_id,modulo_id,titulo,ordem,publicado')
+      .eq('curso_id', courseId).order('modulo_id', { ascending: true }).order('ordem', { ascending: true });
+    if (result.error) throw result.error;
+    var topics = result.data || [];
+    state.topicsByCourse.set(String(courseId), topics);
+    if ($('#material-course') && String($('#material-course').value) === String(courseId)) {
+      populateTopicSelect(courseId, $('#material-module').value);
+    }
+    return topics;
+  }
+
   async function loadModules(courseId) {
     if (!courseId) return [];
     var result = await db.from('modulos')
@@ -191,6 +217,7 @@
       var previousModule = $('#material-module').value;
       populateModuleSelect($('#material-module'), courseId, 'Seleciona um módulo');
       if (modules.some(function (module) { return String(module.id) === String(previousModule); })) $('#material-module').value = String(previousModule);
+      populateTopicSelect(courseId, $('#material-module').value);
     }
     return modules;
   }
@@ -233,7 +260,7 @@
     if (!target || !courseId) return;
     displayEmpty(target, 'A carregar materiais…');
     var result = await db.from('materiais')
-      .select('id,curso_id,modulo_id,titulo,tipo,storage_path,ordem,publicado,created_at,updated_at')
+      .select('id,curso_id,modulo_id,topico_id,titulo,tipo,storage_path,ordem,publicado,created_at,updated_at')
       .eq('curso_id', courseId)
       .order('modulo_id', { ascending: true })
       .order('ordem', { ascending: true });
@@ -267,14 +294,16 @@
       card.dataset.materialType = material.tipo;
       card.dataset.materialPath = material.storage_path || '';
       card.dataset.materialModuleId = String(material.modulo_id);
+      card.dataset.materialTopicId = material.topico_id || '';
       card.dataset.materialPublished = String(Boolean(material.publicado));
 
       var head = document.createElement('div'); head.className = 'material-card-head';
       var titleWrap = document.createElement('div');
       var title = document.createElement('strong'); title.textContent = material.titulo || 'Material sem título';
       var module = modules.find(function (item) { return String(item.id) === String(material.modulo_id); });
+      var topic = (state.topicsByCourse.get(String(courseId)) || []).find(function (item) { return String(item.id) === String(material.topico_id || ''); });
       var status = document.createElement('p'); status.className = 'material-status';
-      status.textContent = (module ? module.titulo : 'Módulo ' + material.modulo_id) + ' · Ordem ' + material.ordem + ' · ' + (material.publicado ? 'Publicado' : 'Rascunho');
+      status.textContent = (module ? module.titulo : 'Módulo ' + material.modulo_id) + (topic ? ' · Aula: ' + topic.titulo : '') + ' · Ordem ' + material.ordem + ' · ' + (material.publicado ? 'Publicado' : 'Rascunho');
       titleWrap.append(title, status);
       var type = document.createElement('span'); type.className = 'material-type'; type.textContent = typeLabels[material.tipo] || material.tipo;
       head.append(titleWrap, type);
@@ -475,6 +504,9 @@
       var title = $('#material-title').value.trim();
       if (!courseId || !moduleId) throw new Error('Seleciona o curso e o módulo.');
       if (!title) throw new Error('Indica o título do material.');
+      var topicId = $('#material-topic').value || null;
+      var selectedTopic = (state.topicsByCourse.get(String(courseId)) || []).find(function (topic) { return String(topic.id) === String(topicId); });
+      if (topicId && (!selectedTopic || String(selectedTopic.modulo_id) !== String(moduleId))) throw new Error('O tópico selecionado não pertence ao módulo indicado.');
       var path;
       if (type === 'link') {
         path = normalizeHttpsUrl($('#material-link').value);
@@ -487,6 +519,7 @@
       var payload = {
         curso_id: courseId,
         modulo_id: moduleId,
+        topico_id: topicId,
         titulo: title,
         tipo: type,
         storage_path: path,
@@ -502,6 +535,7 @@
       updateMaterialTypeFields();
       $('#material-course').value = String(courseId);
       await loadModules(courseId);
+      await loadTopics(courseId);
       await loadMaterials(courseId);
       setNotice(payload.publicado ? 'Material carregado e publicado.' : 'Material carregado como rascunho. Publica-o quando estiver pronto.', 'success');
     } catch (error) {
@@ -522,7 +556,9 @@
     var moduleId = $('.material-module-select', card).value;
     var order = integerValue($('.material-order-input', card).value, 'Ordem do material', false);
     if (!moduleId) throw new Error('Seleciona um módulo.');
-    var result = await db.from('materiais').update({ modulo_id: moduleId, ordem: order, updated_at: new Date().toISOString() })
+    var update = { modulo_id: moduleId, ordem: order, updated_at: new Date().toISOString() };
+    if (String(moduleId) !== String(card.dataset.materialModuleId)) update.topico_id = null;
+    var result = await db.from('materiais').update(update)
       .eq('id', card.dataset.materialId).eq('curso_id', courseId).select('id').maybeSingle();
     if (result.error) throw result.error;
     if (!result.data) throw new Error('O material não foi atualizado.');
@@ -631,8 +667,12 @@
       state.selectedMaterialCourseId = event.target.value;
       try {
         await loadModules(event.target.value);
+        await loadTopics(event.target.value);
         await loadMaterials(event.target.value);
       } catch (error) { setNotice(error.message || 'Não foi possível carregar os materiais.', 'error'); }
+    });
+    $('#material-module').addEventListener('change', function () {
+      populateTopicSelect($('#material-course').value, this.value);
     });
     $('#reload-courses').addEventListener('click', async function () {
       try { await loadCourses(); setNotice('Lista de cursos atualizada.', 'success'); }

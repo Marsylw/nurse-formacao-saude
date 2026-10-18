@@ -1,413 +1,289 @@
 (async function () {
   'use strict';
-
   const client = window.supabase && window.supabase.createClient
-    ? window.supabase.createClient(
-        'https://uzitnphltzblfccmiecf.supabase.co',
-        'sb_publishable_8_3FrRYH5JSpdpi9sSv9Wg_T2ST8IGW'
-      )
+    ? window.supabase.createClient('https://uzitnphltzblfccmiecf.supabase.co', 'sb_publishable_8_3FrRYH5JSpdpi9sSv9Wg_T2ST8IGW')
     : null;
-
   const $ = (id) => document.getElementById(id);
-  const status = $('course-status');
-  const title = $('course-title');
-  const description = $('course-description');
-  const feedback = $('course-feedback');
-  const materialsTarget = $('materials-list');
-  let activeUserId = null;
-  let activeCourseId = null;
+  const els = {
+    status: $('course-status'), title: $('course-title'), description: $('course-description'), feedback: $('course-feedback'),
+    outline: $('learning-outline'), outlineCount: $('outline-count'), lessonKicker: $('lesson-kicker'), lessonTitle: $('lesson-title'),
+    lessonSummary: $('lesson-summary'), player: $('lesson-player'), content: $('lesson-content'), materials: $('lesson-materials'),
+    assessment: $('assessment-panel'), assessmentTitle: $('assessment-title'), assessmentDescription: $('assessment-description'),
+    assessmentForm: $('assessment-form'), assessmentQuestions: $('assessment-questions'), assessmentResult: $('assessment-result'),
+    previous: $('lesson-previous'), next: $('lesson-next'), complete: $('module-complete')
+  };
+  let userId = null, courseId = null, modules = [], items = [], activeIndex = 0, completed = new Set(), assessmentItems = [];
 
-  function setState(label, message) {
-    if (status) status.textContent = label;
-    if (feedback) feedback.textContent = message || '';
-  }
-
-  function setEmpty(target, message) {
-    if (!target) return;
-    const empty = document.createElement('div');
-    empty.className = 'course-empty';
-    empty.textContent = message;
-    target.replaceChildren(empty);
-  }
-
-  function renderProgress(modules, completedIds) {
-    const total = modules.length;
-    const completed = modules.filter((module) => completedIds.has(String(module.id))).length;
-    const percent = total ? Math.round((completed / total) * 100) : 0;
-    const percentEl = $('progress-percent');
-    const bar = $('progress-bar');
-    const summary = $('progress-summary');
-    const nextModule = $('next-module');
-    const nextState = $('next-state');
-
-    if (percentEl) percentEl.textContent = percent + '%';
-    if (bar) bar.style.width = percent + '%';
-    if (summary) summary.textContent = total
-      ? completed + ' de ' + total + ' módulos concluídos'
-      : 'Ainda não existem módulos publicados.';
-
-    const next = modules.find((module) => !completedIds.has(String(module.id)));
-    if (nextModule) nextModule.textContent = next ? next.titulo : (total ? 'Curso concluído' : 'Sem módulos disponíveis');
-    if (nextState) nextState.textContent = next
-      ? (completed ? 'Continua a partir do próximo módulo.' : 'Começa pelo primeiro módulo.')
-      : (total ? 'Parabéns por concluíres todos os módulos.' : 'Os módulos deste curso ainda não foram publicados.');
-  }
-
-  function appendOtherEnrollments(entries, current) {
-    const target = $('other-enrollments');
-    if (!target) return;
-    target.replaceChildren();
-    const uniqueEntries = [];
-    entries.forEach((entry) => {
-      const entryName = (entry.cursos && entry.cursos.nome ? entry.cursos.nome : (entry.curso || '')).trim().toLocaleLowerCase();
-      const duplicateIndex = uniqueEntries.findIndex((existing) => {
-        if (entry.curso_id && existing.curso_id) return String(entry.curso_id) === String(existing.curso_id);
-        const existingName = (existing.cursos && existing.cursos.nome ? existing.cursos.nome : (existing.curso || '')).trim().toLocaleLowerCase();
-        return entryName && entryName === existingName;
-      });
-      if (duplicateIndex === -1) {
-        uniqueEntries.push(entry);
-      } else if (entry.estado === 'confirmado' && uniqueEntries[duplicateIndex].estado !== 'confirmado') {
-        uniqueEntries[duplicateIndex] = entry;
-      }
-    });
-    const others = uniqueEntries.filter((entry) => entry !== current);
-    if (!others.length) return;
-
-    const label = document.createElement('p');
-    label.className = 'eyebrow';
-    label.style.marginTop = '28px';
-    label.textContent = 'Outras inscrições';
-    target.appendChild(label);
-
-    others.forEach((entry) => {
-      const row = document.createElement('div');
-      row.className = 'course-option';
-      const wrapper = document.createElement('div');
-      const courseName = document.createElement('strong');
-      const courseState = document.createElement('span');
-      courseName.textContent = entry.cursos && entry.cursos.nome ? entry.cursos.nome : (entry.curso || 'Curso');
-      courseState.textContent = entry.estado === 'confirmado' ? 'Confirmado' : 'Pendente';
-      wrapper.append(courseName, courseState);
-      row.appendChild(wrapper);
-      target.appendChild(row);
+  function setMessage(node, text) { if (node) node.textContent = text || ''; }
+  function setEmpty(node, text) { if (!node) return; const p = document.createElement('p'); p.className = 'course-empty'; p.textContent = text; node.replaceChildren(p); }
+  function addTextBlock(parent, text) {
+    String(text || '').split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean).forEach((part) => {
+      const p = document.createElement('p'); p.textContent = part; parent.appendChild(p);
     });
   }
-
-  function appendExternalLink(parent, url, label) {
-    const link = document.createElement('a');
-    link.className = 'material-open-link';
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = label;
-    parent.appendChild(link);
-    return link;
+  function isSafePath(path) {
+    const value = String(path || '').trim();
+    return value && !value.startsWith('/') && !value.includes('\\') && !/^https?:/i.test(value) && !value.split('/').some((part) => !part || part === '..');
   }
-
-  function safeHttpsUrl(value) {
+  function youtubeId(url) {
     try {
-      const url = new URL(String(value || '').trim());
-      if (url.protocol !== 'https:' || url.username || url.password) return null;
-      return url.href;
-    } catch (_) {
-      return null;
-    }
+      const parsed = new URL(url);
+      if (!['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.youtube-nocookie.com'].includes(parsed.hostname)) return null;
+      let id = parsed.hostname.includes('youtu.be') ? parsed.pathname.slice(1) : (parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean).pop());
+      return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : null;
+    } catch (_) { return null; }
   }
-
-  async function createMaterialCard(material) {
-    const card = document.createElement('article');
-    card.className = 'material-item';
-
-    const materialTitle = document.createElement('strong');
-    materialTitle.textContent = material.titulo || 'Material do curso';
-    const typeLabel = document.createElement('span');
-    const typeNames = {
-      pdf: 'PDF', video: 'Vídeo', imagem: 'Imagem', audio: 'Áudio',
-      link: 'Link', apresentacao: 'Apresentação'
-    };
-    typeLabel.textContent = typeNames[material.tipo] || 'Material';
-    card.append(materialTitle, typeLabel);
-
-    if (material.tipo === 'link') {
-      const externalUrl = safeHttpsUrl(material.storage_path);
-      if (!externalUrl) {
-        const unavailable = document.createElement('span');
-        unavailable.textContent = 'Este link não está disponível.';
-        card.appendChild(unavailable);
-        return card;
-      }
-      appendExternalLink(card, externalUrl, 'Abrir link');
-      return card;
-    }
-
-    const path = String(material.storage_path || '').trim();
-    const segments = path.split('/');
-    if (!path || path.startsWith('/') || path.includes('\\') || /^https?:/i.test(path) || segments.some((part) => !part || part === '..')) {
-      const invalid = document.createElement('span');
-      invalid.textContent = 'O ficheiro não tem um caminho válido.';
-      card.appendChild(invalid);
-      return card;
-    }
-
-    let signedUrl;
+  function vimeoId(url) {
     try {
-      const result = await client.storage.from('course-materials').createSignedUrl(path, 3600);
-      if (result.error || !result.data || !result.data.signedUrl) throw result.error || new Error('URL temporário indisponível');
-      signedUrl = result.data.signedUrl;
-    } catch (error) {
-      console.warn('Não foi possível gerar um URL temporário para um material.', error);
-      const unavailable = document.createElement('span');
-      unavailable.textContent = 'Este ficheiro está temporariamente indisponível.';
-      card.appendChild(unavailable);
-      return card;
-    }
-
-    if (material.tipo === 'video') {
-      const video = document.createElement('video');
-      video.className = 'material-player';
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.src = signedUrl;
-      video.setAttribute('aria-label', materialTitle.textContent);
-      card.appendChild(video);
-    } else if (material.tipo === 'audio') {
-      const audio = document.createElement('audio');
-      audio.className = 'material-player';
-      audio.controls = true;
-      audio.preload = 'metadata';
-      audio.src = signedUrl;
-      audio.setAttribute('aria-label', materialTitle.textContent);
-      card.appendChild(audio);
-    } else if (material.tipo === 'imagem') {
-      const image = document.createElement('img');
-      image.className = 'material-image-preview';
-      image.src = signedUrl;
-      image.alt = materialTitle.textContent;
-      image.loading = 'lazy';
-      card.appendChild(image);
-      appendExternalLink(card, signedUrl, 'Ver imagem');
-    } else {
-      const label = material.tipo === 'pdf' ? 'Abrir PDF'
-        : material.tipo === 'apresentacao' ? 'Abrir apresentação' : 'Abrir ficheiro';
-      appendExternalLink(card, signedUrl, label);
-    }
-    return card;
+      const parsed = new URL(url);
+      if (!['vimeo.com', 'www.vimeo.com', 'player.vimeo.com'].includes(parsed.hostname)) return null;
+      const match = parsed.pathname.match(/(?:video\/)?(\d{6,12})/);
+      return match ? match[1] : null;
+    } catch (_) { return null; }
   }
-
-  async function toggleModuleCompletion(module, button, message, completedIds, modules) {
-    if (!client || !activeUserId || !activeCourseId || button.disabled) return;
-    button.disabled = true;
-    button.textContent = 'A guardar…';
-    message.textContent = '';
-
+  function makeIframe(src, title) {
+    const frame = document.createElement('iframe');
+    frame.className = 'lesson-iframe'; frame.src = src; frame.title = title || 'Vídeo da aula';
+    frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    frame.allowFullscreen = true; frame.loading = 'lazy'; frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    return frame;
+  }
+  async function signedUrl(path) {
+    if (!isSafePath(path)) throw new Error('Caminho do ficheiro inválido.');
+    const result = await client.storage.from('course-materials').createSignedUrl(path, 3600);
+    if (result.error || !result.data || !result.data.signedUrl) throw result.error || new Error('Ficheiro indisponível.');
+    return result.data.signedUrl;
+  }
+  async function renderMaterial(material, parent, isMain) {
+    const card = document.createElement('article'); card.className = isMain ? 'lesson-media-card lesson-media-main' : 'lesson-resource-card';
+    const heading = document.createElement(isMain ? 'span' : 'strong'); heading.className = isMain ? 'lesson-media-label' : 'lesson-resource-title';
+    heading.textContent = material.titulo || 'Material da aula'; card.appendChild(heading);
     try {
-      const current = await client
-        .from('progresso_modulos')
-        .select('estado')
-        .eq('user_id', activeUserId)
-        .eq('curso_id', activeCourseId)
-        .eq('modulo_id', module.id)
-        .maybeSingle();
-      if (current.error) throw current.error;
-
-      const nextState = current.data && current.data.estado === 'concluido' ? 'em_progresso' : 'concluido';
-      const write = await client.from('progresso_modulos')
-        .upsert({ user_id: activeUserId, curso_id: activeCourseId, modulo_id: module.id, estado: nextState }, {
-          onConflict: 'user_id,modulo_id'
-        })
-        .select('estado')
-        .single();
-
-      if (write.error || !write.data) throw write.error || new Error('O progresso não foi atualizado.');
-      if (nextState === 'concluido') completedIds.add(String(module.id));
-      else completedIds.delete(String(module.id));
-
-      button.dataset.completed = String(nextState === 'concluido');
-      button.setAttribute('aria-pressed', String(nextState === 'concluido'));
-      button.textContent = nextState === 'concluido' ? 'Reabrir módulo' : 'Marcar como concluído';
-      button.disabled = false;
-      message.textContent = nextState === 'concluido' ? 'Módulo marcado como concluído.' : 'Módulo reaberto.';
-      renderProgress(modules, completedIds);
-    } catch (error) {
-      console.error('Não foi possível guardar o progresso do módulo:', error);
-      button.textContent = button.dataset.completed === 'true' ? 'Reabrir módulo' : 'Marcar como concluído';
-      button.disabled = false;
-      message.textContent = 'Não foi possível guardar. Tenta novamente.';
-    }
-  }
-
-  async function renderModules(modules, materials, completedIds, progressError, materialError) {
-    if (!materialsTarget) return;
-    materialsTarget.replaceChildren();
-
-    if (!modules.length) {
-      setEmpty(materialsTarget, 'Ainda não existem módulos publicados para este curso.');
-      return;
-    }
-
-    const materialsByModule = new Map();
-    (materials || []).forEach((material) => {
-      const key = String(material.modulo_id);
-      if (!materialsByModule.has(key)) materialsByModule.set(key, []);
-      materialsByModule.get(key).push(material);
-    });
-
-    for (const module of modules) {
-      const group = document.createElement('section');
-      group.className = 'material-module-group';
-      group.id = 'module-materials-' + String(module.id);
-
-      const header = document.createElement('div');
-      header.className = 'material-module-header';
-      const moduleTitle = document.createElement('h3');
-      moduleTitle.className = 'material-module-heading';
-      moduleTitle.textContent = module.titulo || 'Módulo';
-      header.appendChild(moduleTitle);
-
-      const complete = completedIds.has(String(module.id));
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'button button-ghost module-completion-toggle';
-      button.textContent = complete ? 'Reabrir módulo' : 'Marcar como concluído';
-      button.dataset.completed = String(complete);
-      button.setAttribute('aria-pressed', String(complete));
-      button.disabled = Boolean(progressError);
-      header.appendChild(button);
-
-      const progressMessage = document.createElement('p');
-      progressMessage.className = 'module-progress-feedback';
-      progressMessage.setAttribute('role', 'status');
-      progressMessage.setAttribute('aria-live', 'polite');
-      if (progressError) progressMessage.textContent = 'Não foi possível carregar o progresso.';
-      button.addEventListener('click', () => toggleModuleCompletion(module, button, progressMessage, completedIds, modules));
-
-      const details = document.createElement('div');
-      details.className = 'material-module-details';
-      if (module.descricao) {
-        const moduleDescription = document.createElement('p');
-        moduleDescription.textContent = module.descricao;
-        details.appendChild(moduleDescription);
-      }
-      const youtubeId = String(module.youtube_id || '');
-      if (/^[A-Za-z0-9_-]{11}$/.test(youtubeId)) {
-        appendExternalLink(details, 'https://www.youtube.com/watch?v=' + encodeURIComponent(youtubeId), 'Ver vídeo do módulo');
-      }
-
-      const list = document.createElement('div');
-      list.className = 'material-module-list';
-      if (materialError) {
-        const errorMessage = document.createElement('p');
-        errorMessage.className = 'course-empty';
-        errorMessage.textContent = 'Não foi possível carregar os materiais deste curso.';
-        list.appendChild(errorMessage);
+      if (material.tipo === 'link') {
+        const url = new URL(String(material.storage_path || '').trim());
+        if (url.protocol !== 'https:' || url.username || url.password) throw new Error('Ligação insegura ou inválida.');
+        const yt = youtubeId(url.href), vimeo = vimeoId(url.href);
+        if (yt && isMain) card.appendChild(makeIframe('https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt), material.titulo));
+        else if (vimeo && isMain) card.appendChild(makeIframe('https://player.vimeo.com/video/' + encodeURIComponent(vimeo), material.titulo));
+        else { const link = document.createElement('a'); link.className = 'material-open-link'; link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Abrir material'; card.appendChild(link); }
       } else {
-        const rows = materialsByModule.get(String(module.id)) || [];
-        if (!rows.length) {
-          const empty = document.createElement('p');
-          empty.className = 'course-empty';
-          empty.textContent = 'Ainda não existem materiais publicados neste módulo.';
-          list.appendChild(empty);
-        } else {
-          const cards = await Promise.all(rows.map(createMaterialCard));
-          cards.forEach((card) => list.appendChild(card));
+        const url = await signedUrl(material.storage_path);
+        if (material.tipo === 'video') {
+          const yt = youtubeId(url), vimeo = vimeoId(url);
+          if ((yt || vimeo) && isMain) card.appendChild(makeIframe(yt ? 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt) : 'https://player.vimeo.com/video/' + encodeURIComponent(vimeo), material.titulo));
+          else { const video = document.createElement('video'); video.className = 'lesson-video'; video.controls = true; video.playsInline = true; video.preload = 'metadata'; video.src = url; video.setAttribute('aria-label', material.titulo || 'Vídeo da aula'); card.appendChild(video); }
+        } else if (material.tipo === 'audio') {
+          const audio = document.createElement('audio'); audio.controls = true; audio.preload = 'metadata'; audio.src = url; card.appendChild(audio);
+        } else if (material.tipo === 'imagem') {
+          const image = document.createElement('img'); image.src = url; image.alt = material.titulo || 'Imagem da aula'; image.loading = 'lazy'; image.className = 'lesson-image'; card.appendChild(image);
         }
+        const link = document.createElement('a'); link.className = 'material-open-link'; link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = material.tipo === 'video' ? 'Abrir vídeo noutra janela' : 'Abrir ficheiro'; card.appendChild(link);
       }
-
-      group.append(header, progressMessage, details, list);
-      materialsTarget.appendChild(group);
+    } catch (error) {
+      console.warn('Não foi possível carregar um material do curso.', error);
+      const unavailable = document.createElement('span'); unavailable.className = 'course-empty'; unavailable.textContent = 'Este material está temporariamente indisponível.'; card.appendChild(unavailable);
+    }
+    parent.appendChild(card);
+  }
+  function makeItems(topicRows, materialRows, assessmentRows) {
+    const byModule = new Map(modules.map((module) => [String(module.id), []]));
+    topicRows.forEach((topic) => {
+      const attached = materialRows.filter((material) => String(material.topico_id || '') === String(topic.id));
+      const target = byModule.get(String(topic.modulo_id));
+      if (target) target.push({ kind: 'topic', id: String(topic.id), title: topic.titulo, summary: topic.resumo || '', content: topic.conteudo || '', materials: attached, moduleId: String(topic.modulo_id), order: Number(topic.ordem) || 0 });
+    });
+    modules.forEach((module) => {
+      const target = byModule.get(String(module.id));
+      const unattached = materialRows.filter((material) => String(material.modulo_id) === String(module.id) && !material.topico_id);
+      unattached.forEach((material) => {
+        target.push({ kind: 'topic', id: 'material-' + material.id, title: material.titulo || 'Material da aula', summary: '', content: '', materials: [material], moduleId: String(module.id), order: Number(material.ordem) || 0 });
+      });
+      target.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, 'pt'));
+      if (/^[A-Za-z0-9_-]{11}$/.test(String(module.youtube_id || ''))) {
+        const hasEmbeddedLessonVideo = target.some((item) => (item.materials || []).some((material) => material.tipo === 'video' || (material.tipo === 'link' && (youtubeId(material.storage_path) || vimeoId(material.storage_path)))));
+        if (target.length && !hasEmbeddedLessonVideo) target[0].youtubeId = module.youtube_id;
+        else if (!target.length) target.push({ kind: 'topic', id: 'module-video-' + module.id, title: 'Vídeo do módulo', summary: module.descricao || '', content: '', materials: [], youtubeId: module.youtube_id, moduleId: String(module.id), order: 0 });
+      }
+      assessmentRows.filter((assessment) => String(assessment.modulo_id || '') === String(module.id)).forEach((assessment) => {
+        target.push({ kind: 'assessment', id: 'assessment-' + assessment.id, title: assessment.titulo, summary: assessment.descricao || '', assessment: assessment, moduleId: String(module.id) });
+      });
+    });
+    const result = [];
+    modules.forEach((module) => {
+      const moduleItems = byModule.get(String(module.id)) || [];
+      if (!moduleItems.length) moduleItems.push({ kind: 'empty', id: 'empty-' + module.id, title: 'Conteúdo em preparação', summary: 'Este módulo ainda não tem aulas publicadas.', moduleId: String(module.id) });
+      moduleItems.forEach((item) => { item.module = module; result.push(item); });
+    });
+    assessmentRows.filter((assessment) => !assessment.modulo_id).forEach((assessment) => result.push({ kind: 'assessment', id: 'assessment-' + assessment.id, title: assessment.titulo, summary: assessment.descricao || '', assessment: assessment, moduleId: null, module: null }));
+    return result;
+  }
+  function updateProgress() {
+    const total = modules.length, done = modules.filter((module) => completed.has(String(module.id))).length;
+    const percent = total ? Math.round(done / total * 100) : 0;
+    $('progress-percent').textContent = percent + '%'; $('progress-bar').style.width = percent + '%';
+    $('progress-summary').textContent = total ? done + ' de ' + total + ' módulos concluídos' : 'Ainda não existem módulos publicados.';
+  }
+  function renderOutline() {
+    if (!items.length) { setEmpty(els.outline, 'Ainda não existem módulos publicados neste curso.'); return; }
+    els.outline.replaceChildren();
+    const sectionByModule = new Map();
+    modules.forEach((module) => {
+      const details = document.createElement('details'); details.className = 'outline-module'; details.open = sectionByModule.size === 0;
+      const summary = document.createElement('summary');
+      const title = document.createElement('span'); title.textContent = module.titulo;
+      const count = document.createElement('small'); count.textContent = items.filter((item) => item.moduleId === String(module.id)).length + ' itens';
+      summary.append(title, count); details.appendChild(summary);
+      const list = document.createElement('div'); list.className = 'outline-module-items'; details.appendChild(list);
+      els.outline.appendChild(details); sectionByModule.set(String(module.id), list);
+    });
+    const finalAssessments = document.createElement('div'); finalAssessments.className = 'outline-module-items outline-final-assessments';
+    items.forEach((item, index) => {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'outline-item'; button.dataset.itemIndex = String(index);
+      button.setAttribute('aria-current', index === activeIndex ? 'step' : 'false');
+      const icon = document.createElement('span'); icon.className = 'outline-item-icon'; icon.textContent = item.kind === 'assessment' ? '✓' : item.materials && item.materials.some((m) => m.tipo === 'video') || item.youtubeId ? '▶' : '▤';
+      const label = document.createElement('span'); label.textContent = item.title;
+      button.append(icon, label);
+      if (item.moduleId && sectionByModule.has(item.moduleId)) sectionByModule.get(item.moduleId).appendChild(button);
+      else finalAssessments.appendChild(button);
+    });
+    if (finalAssessments.childElementCount) {
+      const heading = document.createElement('p'); heading.className = 'outline-final-title'; heading.textContent = 'Avaliação final'; els.outline.append(heading, finalAssessments);
+    }
+    const count = items.length; els.outlineCount.textContent = count + (count === 1 ? ' item' : ' itens');
+    setActiveOutline();
+  }
+  function setActiveOutline() {
+    els.outline.querySelectorAll('.outline-item').forEach((button) => {
+      const active = Number(button.dataset.itemIndex) === activeIndex;
+      button.classList.toggle('is-active', active); button.setAttribute('aria-current', active ? 'step' : 'false');
+      if (active) button.closest('details') && (button.closest('details').open = true);
+    });
+  }
+  async function renderTopic(item) {
+    els.assessment.hidden = true; els.player.replaceChildren(); els.content.replaceChildren(); els.materials.replaceChildren();
+    setMessage(els.lessonKicker, (item.module ? item.module.titulo + ' · ' : '') + 'Aula');
+    setMessage(els.lessonTitle, item.title); setMessage(els.lessonSummary, item.summary);
+    const videos = (item.materials || []).filter((material) => material.tipo === 'video');
+    const linkedVideos = (item.materials || []).filter((material) => material.tipo === 'link' && (youtubeId(material.storage_path) || vimeoId(material.storage_path)));
+    const primary = videos[0] || linkedVideos[0] || null;
+    if (primary) await renderMaterial(primary, els.player, true);
+    else if (item.youtubeId) els.player.appendChild(makeIframe('https://www.youtube-nocookie.com/embed/' + encodeURIComponent(item.youtubeId), item.title));
+    else setEmpty(els.player, item.kind === 'empty' ? 'O administrador ainda não publicou uma aula neste módulo.' : 'Esta aula não tem um vídeo associado.');
+    addTextBlock(els.content, item.content);
+    const resources = (item.materials || []).filter((material) => !primary || String(material.id) !== String(primary.id));
+    if (resources.length) {
+      const heading = document.createElement('h3'); heading.className = 'lesson-resources-heading'; heading.textContent = 'Materiais desta aula'; els.materials.appendChild(heading);
+      for (const material of resources) await renderMaterial(material, els.materials, false);
+    }
+    const module = item.module;
+    els.complete.hidden = !module;
+    if (module) {
+      const isDone = completed.has(String(module.id));
+      els.complete.textContent = isDone ? 'Reabrir módulo' : 'Marcar módulo como concluído';
+      els.complete.dataset.completed = String(isDone); els.complete.dataset.moduleId = String(module.id);
     }
   }
-
-  if (!client) {
-    setState('Erro', 'Não foi possível ligar ao serviço de cursos.');
-    return;
+  function makeQuizQuestion(question, index) {
+    const fieldset = document.createElement('fieldset'); fieldset.className = 'assessment-question';
+    const legend = document.createElement('legend'); legend.textContent = (index + 1) + '. ' + question.prompt; fieldset.appendChild(legend);
+    (question.options || []).forEach((option) => {
+      const label = document.createElement('label'); label.className = 'assessment-option';
+      const input = document.createElement('input'); input.type = 'radio'; input.name = 'answer-' + question.id; input.value = option.id; input.required = true;
+      const text = document.createElement('span'); text.textContent = option.text; label.append(input, text); fieldset.appendChild(label);
+    });
+    return fieldset;
   }
-
-  const authResult = await client.auth.getUser();
-  const user = authResult && authResult.data ? authResult.data.user : null;
-  if (authResult.error || !user) {
-    window.location.href = 'login.html?redirect=meu-curso.html';
-    return;
+  async function renderAssessment(item) {
+    els.player.replaceChildren(); els.content.replaceChildren(); els.materials.replaceChildren(); els.complete.hidden = true;
+    els.assessment.hidden = false; setMessage(els.lessonKicker, item.module ? item.module.titulo + ' · Avaliação' : 'Avaliação final');
+    setMessage(els.lessonTitle, item.title); setMessage(els.lessonSummary, item.summary); setMessage(els.assessmentTitle, item.title);
+    setMessage(els.assessmentDescription, item.summary || 'Responde a todas as perguntas para veres o resultado.');
+    setMessage(els.assessmentResult, ''); els.assessmentQuestions.replaceChildren();
+    setEmpty(els.player, 'Questionário de escolha única');
+    const attemptResult = await client.from('tentativas_avaliacao').select('percentual,aprovado,created_at').eq('avaliacao_id', item.assessment.id).eq('user_id', userId).order('created_at', { ascending: false }).limit(3);
+    if (!attemptResult.error && attemptResult.data && attemptResult.data.length) {
+      const attempts = document.createElement('span'); attempts.className = 'assessment-attempts';
+      attempts.textContent = 'Tentativas anteriores: ' + attemptResult.data.map((a) => a.percentual + '% ' + (a.aprovado ? '(aprovado)' : '(não aprovado)')).join(' · ');
+      els.assessmentDescription.appendChild(attempts);
+    }
+    const result = await client.rpc('get_student_assessment', { p_assessment_id: item.assessment.id });
+    if (result.error || !result.data) { setMessage(els.assessmentResult, 'Não foi possível abrir esta avaliação.'); return; }
+    const assessment = result.data;
+    assessment.questoes.forEach((question, index) => els.assessmentQuestions.appendChild(makeQuizQuestion(question, index)));
+    els.assessmentForm.onsubmit = async function (event) {
+      event.preventDefault(); const submit = $('assessment-submit'); submit.disabled = true; setMessage(els.assessmentResult, 'A corrigir…');
+      const answers = assessment.questoes.map((question) => {
+        const selected = els.assessmentQuestions.querySelector('input[name="answer-' + CSS.escape(question.id) + '"]:checked');
+        return selected ? { question_id: question.id, option_id: selected.value } : null;
+      });
+      if (answers.some((answer) => !answer)) { setMessage(els.assessmentResult, 'Responde a todas as perguntas.'); submit.disabled = false; return; }
+      try {
+        const checked = await client.rpc('submit_student_assessment', { p_assessment_id: item.assessment.id, p_answers: answers });
+        if (checked.error) throw checked.error;
+        const row = Array.isArray(checked.data) ? checked.data[0] : checked.data;
+        setMessage(els.assessmentResult, row.percentual + '% · ' + (row.aprovado ? 'Aprovado' : 'Não atingiste a nota mínima de ' + assessment.minimo_percentual + '%. Podes tentar novamente.'));
+        if (row.aprovado) els.assessmentResult.classList.add('is-passed'); else els.assessmentResult.classList.remove('is-passed');
+      } catch (error) { console.error(error); setMessage(els.assessmentResult, 'Não foi possível corrigir a avaliação. Tenta novamente.'); }
+      finally { submit.disabled = false; }
+    };
   }
-  activeUserId = user.id;
-
-  const enrollmentResult = await client
-    .from('inscricoes')
-    .select('curso,curso_id,estado,created_at,cursos(id,nome,descricao)')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
-
-  if (enrollmentResult.error) {
-    setState('Erro', 'Não foi possível carregar as tuas inscrições.');
-    if (title) title.textContent = 'Erro ao carregar o curso';
-    if (description) description.textContent = 'Tenta atualizar a página.';
-    setEmpty(materialsTarget, 'Não foi possível carregar as inscrições.');
-    return;
+  async function renderCurrent() {
+    if (!items.length) return;
+    const item = items[activeIndex]; setActiveOutline();
+    els.previous.disabled = activeIndex === 0; els.next.disabled = activeIndex === items.length - 1;
+    if (item.kind === 'assessment') await renderAssessment(item); else await renderTopic(item);
   }
-
-  const entries = enrollmentResult.data || [];
-  const confirmed = entries.filter((entry) => entry.estado === 'confirmado');
-  const pending = entries.filter((entry) => entry.estado !== 'confirmado');
-  const current = confirmed[0];
-
-  if (!current) {
-    setState(pending.length ? 'Pendente' : 'Sem inscrição', pending.length
-      ? 'A tua inscrição está pendente de aprovação.'
-      : 'Ainda não tens uma inscrição confirmada.');
-    if (title) title.textContent = 'Ainda não tens um curso inscrito';
-    if (description) description.textContent = 'Consulta o catálogo completo para escolheres uma formação.';
-    if ($('next-module')) $('next-module').textContent = 'Escolhe uma formação';
-    if ($('next-state')) $('next-state').textContent = 'Todos os cursos disponíveis estão listados no catálogo Nurse.';
-    if ($('progress-percent')) $('progress-percent').textContent = '0%';
-    if ($('progress-bar')) $('progress-bar').style.width = '0%';
-    if ($('progress-summary')) $('progress-summary').textContent = 'O progresso fica disponível após a confirmação da inscrição.';
-    setEmpty(materialsTarget, 'Os materiais aparecem após a confirmação da inscrição.');
-    return;
+  async function updateModuleCompletion() {
+    const button = els.complete, moduleId = button.dataset.moduleId;
+    if (!moduleId || !userId || !courseId) return;
+    button.disabled = true; const nextState = button.dataset.completed === 'true' ? 'em_progresso' : 'concluido';
+    const write = await client.from('progresso_modulos').upsert({ user_id: userId, curso_id: courseId, modulo_id: Number(moduleId), estado: nextState }, { onConflict: 'user_id,modulo_id' });
+    if (write.error) { setMessage(els.feedback, 'Não foi possível guardar o progresso. Tenta novamente.'); button.disabled = false; return; }
+    if (nextState === 'concluido') completed.add(String(moduleId)); else completed.delete(String(moduleId));
+    updateProgress(); button.dataset.completed = String(nextState === 'concluido'); button.textContent = nextState === 'concluido' ? 'Reabrir módulo' : 'Marcar módulo como concluído'; button.disabled = false;
   }
-
-  activeCourseId = current.curso_id;
-  const course = current.cursos || {};
-  setState('Confirmado', 'Inscrição confirmada.');
-  if (title) title.textContent = course.nome || current.curso || 'Curso inscrito';
-  if (description) description.textContent = course.descricao || 'Os teus módulos e materiais estão disponíveis abaixo.';
-  appendOtherEnrollments(entries, current);
-
-  const [modulesResult, progressResult, materialsResult] = await Promise.all([
-    client.from('modulos')
-      .select('id,titulo,descricao,ordem,youtube_id,curso_id')
-      .eq('curso_id', activeCourseId)
-      .order('ordem', { ascending: true }),
-    client.from('progresso_modulos')
-      .select('modulo_id,estado')
-      .eq('curso_id', activeCourseId)
-      .eq('user_id', user.id),
-    client.from('materiais')
-      .select('modulo_id,titulo,tipo,storage_path,ordem')
-      .eq('curso_id', activeCourseId)
-      .eq('publicado', true)
-      .order('modulo_id', { ascending: true })
-      .order('ordem', { ascending: true })
+  if (!client) { setMessage(els.status, 'Erro'); setMessage(els.feedback, 'Não foi possível ligar ao serviço de cursos.'); return; }
+  const authResult = await client.auth.getUser(), user = authResult.data && authResult.data.user;
+  if (authResult.error || !user) { window.location.href = 'login.html?redirect=meu-curso.html'; return; }
+  userId = user.id;
+  const enrollments = await client.from('inscricoes').select('curso,curso_id,estado,created_at,cursos(id,nome,descricao)').eq('user_id', userId).order('created_at', { ascending: false });
+  if (enrollments.error) { setMessage(els.status, 'Erro'); setEmpty(els.outline, 'Não foi possível carregar as inscrições.'); return; }
+  const enrollment = (enrollments.data || []).find((entry) => String(entry.estado || '').trim().toLocaleLowerCase() === 'confirmado' && entry.curso_id);
+  if (!enrollment) {
+    setMessage(els.status, (enrollments.data || []).length ? 'Pendente' : 'Sem inscrição');
+    setMessage(els.title, 'Ainda não tens um curso inscrito'); setMessage(els.description, 'Os conteúdos ficam disponíveis após a confirmação da inscrição.');
+    setMessage(els.lessonTitle, 'Aguarda a confirmação da inscrição'); setMessage(els.lessonSummary, 'Depois da confirmação, as aulas do teu curso aparecem aqui.');
+    setEmpty(els.outline, 'Não há aulas disponíveis.'); setEmpty(els.player, 'Este conteúdo é reservado a alunos com inscrição confirmada.');
+    setMessage(els.feedback, 'Consulta o catálogo de cursos ou contacta o suporte se precisares de ajuda.');
+    $('progress-summary').textContent = 'O progresso fica disponível após a confirmação da inscrição.'; return;
+  }
+  courseId = enrollment.curso_id; const course = enrollment.cursos || {};
+  setMessage(els.status, 'Inscrição confirmada'); setMessage(els.title, course.nome || enrollment.curso || 'Meu curso');
+  setMessage(els.description, course.descricao || 'Continua a tua aprendizagem pelo programa do curso.');
+  const results = await Promise.all([
+    client.from('modulos').select('id,titulo,descricao,ordem,youtube_id,curso_id').eq('curso_id', courseId).order('ordem').order('id'),
+    client.from('topicos').select('id,curso_id,modulo_id,titulo,resumo,conteudo,ordem,publicado').eq('curso_id', courseId).eq('publicado', true).order('modulo_id').order('ordem'),
+    client.from('materiais').select('id,curso_id,modulo_id,topico_id,titulo,tipo,storage_path,ordem').eq('curso_id', courseId).eq('publicado', true).order('modulo_id').order('ordem'),
+    client.from('progresso_modulos').select('modulo_id,estado').eq('curso_id', courseId).eq('user_id', userId),
+    client.rpc('get_student_assessments', { p_curso_id: courseId })
   ]);
-
-  if (modulesResult.error) {
-    console.error('Não foi possível carregar os módulos:', modulesResult.error);
-    setState('Erro', 'Não foi possível carregar os módulos deste curso.');
-    setEmpty(materialsTarget, 'Não foi possível carregar os módulos. Tenta atualizar a página.');
-    return;
-  }
-
-  const modules = modulesResult.data || [];
-  const progressError = progressResult.error || null;
-  if (progressError) console.error('Não foi possível carregar o progresso:', progressError);
-  const completedIds = new Set((progressResult.data || [])
-    .filter((entry) => entry.estado === 'concluido')
-    .map((entry) => String(entry.modulo_id)));
-  renderProgress(modules, completedIds);
-  if (progressError && $('progress-summary')) $('progress-summary').textContent = 'Não foi possível carregar o progresso. Tenta atualizar a página.';
-  const materialError = materialsResult.error || null;
-  if (materialError) console.error('Não foi possível carregar os materiais:', materialError);
-
-  await renderModules(modules, materialsResult.data || [], completedIds, progressError, materialError);
+  if (results[0].error) { setMessage(els.status, 'Erro'); setEmpty(els.outline, 'Não foi possível carregar os módulos do curso.'); return; }
+  modules = results[0].data || [];
+  if (results[1].error) console.warn('Tópicos indisponíveis:', results[1].error);
+  if (results[2].error) console.warn('Materiais indisponíveis:', results[2].error);
+  if (results[3].error) console.warn('Progresso indisponível:', results[3].error);
+  if (results[4].error) console.warn('Avaliações indisponíveis:', results[4].error);
+  const topics = results[1].data || [], materials = results[2].data || [], assessmentRows = results[4].data || [];
+  completed = new Set((results[3].data || []).filter((entry) => entry.estado === 'concluido').map((entry) => String(entry.modulo_id)));
+  items = makeItems(topics, materials, assessmentRows); updateProgress();
+  if (!modules.length) { setEmpty(els.outline, 'Ainda não existem módulos publicados neste curso.'); setEmpty(els.player, 'As aulas aparecem aqui quando o administrador as publicar.'); return; }
+  renderOutline();
+  els.outline.addEventListener('click', async function (event) {
+    const button = event.target.closest('[data-item-index]'); if (!button) return;
+    activeIndex = Number(button.dataset.itemIndex); await renderCurrent();
+  });
+  els.previous.addEventListener('click', async function () { if (activeIndex > 0) { activeIndex -= 1; await renderCurrent(); } });
+  els.next.addEventListener('click', async function () { if (activeIndex < items.length - 1) { activeIndex += 1; await renderCurrent(); } });
+  els.complete.addEventListener('click', updateModuleCompletion);
+  await renderCurrent();
 })();

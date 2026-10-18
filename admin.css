@@ -175,3 +175,17 @@ h3 { margin-bottom: 1rem; font-size: 1.12rem; letter-spacing: -.015em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Topic and quiz authoring for the course learning structure. */
+.topic-admin-row,.assessment-admin-row{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.8rem;border:1px solid var(--admin-line);border-radius:11px;background:#fcfdfd}
+.topic-admin-row strong,.assessment-admin-row strong{display:block;overflow-wrap:anywhere}.topic-admin-row p,.assessment-admin-row p{margin:.22rem 0 0;color:var(--admin-muted);font-size:.82rem}
+.question-builder-heading,.question-editor-head{display:flex;align-items:center;justify-content:space-between;gap:.7rem}
+.question-builder-heading h4{margin:0;color:var(--admin-brand);font-size:1rem}
+.question-editor{display:grid;gap:.8rem;min-width:0;margin:0;padding:1rem;border:1px solid var(--admin-line);border-radius:12px;background:#fbfcfc}
+.question-editor legend{padding:0 .3rem;color:var(--admin-brand);font-weight:800}
+.question-editor-head legend{float:left}.question-remove{min-height:34px;padding:.4rem .6rem;font-size:.78rem}
+.question-options{display:grid;gap:.5rem}.question-option-row{display:grid;grid-template-columns:1.15rem minmax(0,1fr);align-items:center;gap:.55rem}
+.question-option-row input[type=radio]{width:1.05rem;height:1.05rem;accent-color:var(--admin-brand)}
+.question-option-row input[type=text]{width:100%;min-width:0;min-height:42px;padding:.62rem .7rem;border:1px solid #cbd8d4;border-radius:8px;background:#fff;color:var(--admin-ink)}
+@media(max-width:600px){.topic-admin-row,.assessment-admin-row{align-items:flex-start;flex-direction:column}.topic-admin-row .button{width:100%}.question-builder-heading{align-items:flex-start;flex-direction:column}}
