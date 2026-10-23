@@ -53,11 +53,36 @@
     <div id="admin-app" hidden>
       <div id="admin-notice" class="notice" role="status" aria-live="polite" hidden></div>
       <nav class="section-jump" aria-label="Secções de gestão">
+        <a href="#inscricoes">Inscrições</a>
         <a href="#cursos">Cursos</a>
         <a href="#modulos">Módulos</a>
         <a href="#materiais">Materiais</a>
         <a href="admin-learning.html">Tópicos e avaliações</a>
       </nav>
+
+      <section id="inscricoes" class="admin-section" aria-labelledby="enrollments-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">Admissões</p><h2 id="enrollments-heading">Inscrições de alunos</h2></div>
+          <p>Revê os pedidos e confirma os que têm uma conta de aluno associada. A confirmação libera o acesso ao curso, mas não regista nem valida pagamentos.</p>
+        </div>
+        <section class="admin-card list-card" aria-labelledby="enrollment-list-heading">
+          <div class="card-heading-row enrollment-list-toolbar">
+            <div><p class="eyebrow">Pedidos recebidos</p><h3 id="enrollment-list-heading">Inscrições</h3></div>
+            <div class="enrollment-list-actions">
+              <label class="inline-control" for="enrollment-filter">Estado
+                <select id="enrollment-filter">
+                  <option value="pendente" selected>Pendentes</option>
+                  <option value="todos">Todas</option>
+                  <option value="confirmado">Confirmadas</option>
+                </select>
+              </label>
+              <button id="reload-enrollments" class="button button-quiet" type="button">Atualizar</button>
+            </div>
+          </div>
+          <p id="enrollment-count" class="helper-text" aria-live="polite">A carregar inscrições…</p>
+          <div id="enrollment-list" class="item-list enrollment-list" aria-live="polite"><p class="empty-state">A carregar inscrições…</p></div>
+        </section>
+      </section>
 
       <section id="cursos" class="admin-section" aria-labelledby="courses-heading">
         <div class="section-heading">

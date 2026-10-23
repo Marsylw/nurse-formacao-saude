@@ -643,6 +643,131 @@
     else setNotice('Material eliminado.', 'success');
   }
 
+  function addEnrollmentDetail(container, label, value) {
+    var item = document.createElement('div');
+    item.className = 'enrollment-detail';
+    var heading = document.createElement('span');
+    heading.className = 'enrollment-detail-label';
+    heading.textContent = label;
+    var content = document.createElement('strong');
+    content.textContent = value || 'Não indicado';
+    item.append(heading, content);
+    container.appendChild(item);
+  }
+
+  function renderEnrollments(rows) {
+    var target = $('#enrollment-list');
+    var count = $('#enrollment-count');
+    if (count) count.textContent = rows.length + (rows.length === 1 ? ' inscrição apresentada.' : ' inscrições apresentadas.');
+    if (!rows.length) {
+      displayEmpty(target, 'Não há inscrições para este filtro.');
+      return;
+    }
+
+    target.replaceChildren();
+    rows.forEach(function (enrollment) {
+      var status = String(enrollment.estado || 'pendente').trim().toLocaleLowerCase();
+      var isPending = status === 'pendente';
+      var accountLinked = enrollment.conta_vinculada === true;
+      var courseLinked = Boolean(enrollment.curso_id);
+      var card = document.createElement('article');
+      card.className = 'enrollment-admin-card';
+      card.dataset.enrollmentId = enrollment.id;
+
+      var header = document.createElement('div');
+      header.className = 'enrollment-card-header';
+      var identity = document.createElement('div');
+      var name = document.createElement('strong');
+      name.className = 'enrollment-student-name';
+      name.textContent = enrollment.nome_aluno || 'Aluno sem nome';
+      var course = document.createElement('p');
+      course.className = 'enrollment-course-name';
+      course.textContent = enrollment.curso_nome || 'Curso não identificado';
+      identity.append(name, course);
+      var badge = document.createElement('span');
+      badge.className = 'enrollment-status-badge ' + (isPending ? 'is-pending' : (status === 'confirmado' ? 'is-confirmed' : ''));
+      badge.textContent = enrollment.estado || 'pendente';
+      header.append(identity, badge);
+
+      var details = document.createElement('div');
+      details.className = 'enrollment-details';
+      addEnrollmentDetail(details, 'Email', enrollment.email);
+      addEnrollmentDetail(details, 'Telefone', enrollment.telefone);
+      addEnrollmentDetail(details, 'Conta de aluno', accountLinked ? 'Associada' : 'Ainda não associada');
+      addEnrollmentDetail(details, 'Pagamento indicado', enrollment.metodo_pagamento);
+      var created = enrollment.criado_em ? new Date(enrollment.criado_em).toLocaleString('pt-PT') : 'Data indisponível';
+      addEnrollmentDetail(details, 'Pedido recebido', created);
+
+      card.append(header, details);
+      if (enrollment.mensagem) {
+        var message = document.createElement('p');
+        message.className = 'enrollment-message';
+        var label = document.createElement('strong');
+        label.textContent = 'Observações: ';
+        message.append(label, document.createTextNode(enrollment.mensagem));
+        card.appendChild(message);
+      }
+
+      if (isPending && accountLinked && courseLinked) {
+        var actions = document.createElement('div');
+        actions.className = 'enrollment-actions';
+        var confirmButton = document.createElement('button');
+        confirmButton.type = 'button';
+        confirmButton.className = 'button button-primary';
+        confirmButton.dataset.action = 'confirm-enrollment';
+        confirmButton.textContent = 'Confirmar inscrição';
+        actions.appendChild(confirmButton);
+        card.appendChild(actions);
+      } else if (isPending) {
+        var waiting = document.createElement('p');
+        waiting.className = 'enrollment-link-warning';
+        waiting.textContent = !accountLinked
+          ? 'Aguarda a associação da conta: pede ao aluno para iniciar sessão com o mesmo email da inscrição e atualiza esta lista antes de confirmar.'
+          : 'Esta inscrição ainda não está associada a um curso válido do catálogo. Corrige primeiro a ligação do curso antes de a confirmar.';
+        card.appendChild(waiting);
+      }
+      target.appendChild(card);
+    });
+  }
+
+  async function loadEnrollments() {
+    var target = $('#enrollment-list');
+    var count = $('#enrollment-count');
+    if (count) count.textContent = 'A carregar inscrições…';
+    displayEmpty(target, 'A carregar inscrições…');
+    var result = await db.rpc('admin_list_enrollments', {
+      p_status: $('#enrollment-filter').value,
+      p_limit: 200,
+      p_offset: 0
+    });
+    if (result.error) throw result.error;
+    renderEnrollments(result.data || []);
+  }
+
+  async function confirmEnrollment(card, button) {
+    var studentName = $('.enrollment-student-name', card).textContent;
+    var courseName = $('.enrollment-course-name', card).textContent;
+    if (!window.confirm('Confirmar a inscrição de ' + studentName + ' no curso “' + courseName + '”? O aluno terá acesso aos conteúdos publicados. Esta ação não confirma nem regista o pagamento.')) return;
+
+    setBusy(button, true, 'A confirmar…');
+    try {
+      var result = await db.rpc('admin_confirm_enrollment', { p_inscricao_id: card.dataset.enrollmentId });
+      if (result.error) throw result.error;
+      if (!result.data || result.data.estado !== 'confirmado') throw new Error('A inscrição não foi confirmada.');
+      try {
+        await loadEnrollments();
+        setNotice('Inscrição de ' + studentName + ' confirmada. O acesso aos materiais publicados fica disponível para a conta associada; verifica o pagamento separadamente.', 'success');
+      } catch (refreshError) {
+        console.error('A inscrição foi confirmada, mas a lista não atualizou:', refreshError);
+        setNotice('A inscrição foi confirmada, mas não foi possível atualizar a lista. Usa Atualizar para recarregar.', 'warning');
+      }
+    } catch (error) {
+      console.error('Falha ao confirmar inscrição:', error);
+      setNotice(error.message || 'Não foi possível confirmar a inscrição.', 'error');
+      setBusy(button, false);
+    }
+  }
+
   function updateMaterialTypeFields() {
     var type = $('#material-type').value;
     var isLink = type === 'link';
@@ -658,6 +783,20 @@
     $('#module-form').addEventListener('submit', createModule);
     $('#material-form').addEventListener('submit', createMaterial);
     $('#material-type').addEventListener('change', updateMaterialTypeFields);
+    $('#enrollment-filter').addEventListener('change', async function () {
+      try { await loadEnrollments(); }
+      catch (error) { displayEmpty($('#enrollment-list'), 'Não foi possível carregar as inscrições.'); setNotice(error.message || 'Não foi possível carregar as inscrições.', 'error'); }
+    });
+    $('#reload-enrollments').addEventListener('click', async function () {
+      try { await loadEnrollments(); setNotice('Lista de inscrições atualizada.', 'success'); }
+      catch (error) { displayEmpty($('#enrollment-list'), 'Não foi possível carregar as inscrições.'); setNotice(error.message || 'Não foi possível atualizar as inscrições.', 'error'); }
+    });
+    $('#enrollment-list').addEventListener('click', async function (event) {
+      var button = event.target.closest('button[data-action="confirm-enrollment"]');
+      if (!button || button.disabled) return;
+      var card = button.closest('.enrollment-admin-card');
+      if (card) await confirmEnrollment(card, button);
+    });
     $('#module-course').addEventListener('change', async function (event) {
       state.selectedModuleCourseId = event.target.value;
       try { await loadModules(event.target.value); }
@@ -749,6 +888,12 @@
       bindEvents();
       updateMaterialTypeFields();
       await loadCourses();
+      try { await loadEnrollments(); }
+      catch (enrollmentError) {
+        console.error('Não foi possível carregar as inscrições:', enrollmentError);
+        displayEmpty($('#enrollment-list'), 'Não foi possível carregar as inscrições. Verifica a ligação e tenta novamente.');
+        $('#enrollment-count').textContent = 'Falha ao carregar inscrições.';
+      }
     } catch (error) {
       console.error('Não foi possível validar a sessão administrativa:', error);
       showAccessDenied(error.message || 'Não foi possível validar a sessão administrativa.');
