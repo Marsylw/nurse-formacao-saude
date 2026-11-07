@@ -6,6 +6,7 @@
 <title>Nurse Formação em Saúde – Cursos e Certificação em Angola</title>
 <meta name="description" content="Cursos práticos e certificados para enfermeiros, técnicos e auxiliares de saúde em Angola. Do Suporte Básico de Vida à UTI.">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="carousel.css">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -1465,7 +1466,13 @@
 <div class="divider"></div>
 
 <!-- SECÇÃO DO CARROSSEL -->
-<section id="carousel-section" style="padding:20px 5%;"></section>
+<section id="carousel-section" style="padding:20px 5%;">
+  <div class="section-inner" style="max-width:1100px;margin:0 auto;">
+    <div class="section-title">A nossa <em>Galeria</em></div>
+    <div class="section-sub">Momentos de formação e aprendizagem</div>
+    <div id="depth-carousel-root" style="height:500px;position:relative;"></div>
+  </div>
+</section>
 
 <!-- RODAPÉ INSTITUCIONAL -->
 <footer>
@@ -1878,9 +1885,6 @@
     });
   }
 
-  if (typeof initCarousel === 'function') {
-    initCarousel();
-  }
 </script>
 <script src="course-catalog-sync.js"></script>
 

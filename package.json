@@ -5,8 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
-    "build": "node -e \"console.log('Build complete')\"",
+    "build": "esbuild components/depth-carousel/main.jsx --bundle --minify --format=iife --jsx=automatic --outfile=carousel.js",
     "start": "node server.js",
     "lint": "node -e \"console.log('Lint clean')\""
+  },
+  "dependencies": {
+    "gsap": "^3.14.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.27.1"
   }
 }
